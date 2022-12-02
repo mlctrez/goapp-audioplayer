@@ -2,6 +2,7 @@ package nav
 
 import (
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
+	"github.com/mlctrez/goapp-audioplayer/goapp"
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/websocket"
 	"github.com/mlctrez/goapp-audioplayer/internal/icon"
 	"github.com/mlctrez/goapp-audioplayer/model"
@@ -26,7 +27,7 @@ func (n *Navigation) Render() app.UI {
 			app.Raw(icon.Search48()),
 		),
 		app.Div().Class("navigation-right").Body(
-			app.Div().Body(app.Text("PROFILE")),
+			app.Div().Body(app.Text(goapp.RuntimeVersion())),
 		),
 	)
 }
