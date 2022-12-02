@@ -15,7 +15,7 @@ run: binary
 
 binary: wasm
 	@mkdir -p temp
-	@#echo "ldflags=$(LD_FLAGS)"
+	@echo "ldflags=$(LD_FLAGS)"
 	@go build -o temp/$(APP_NAME) -ldflags $(LD_FLAGS) $(MAIN)
 
 wasm: model

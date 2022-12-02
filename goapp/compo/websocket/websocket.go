@@ -38,10 +38,11 @@ func (ac *Actions) handle(webSocket *WebSocket) {
 
 type WebSocket struct {
 	app.Compo
-	clientId  string
-	conn      *websocket.Conn
-	wsContext context.Context
-	wsCancel  context.CancelFunc
+	clientId      string
+	conn          *websocket.Conn
+	wsContext     context.Context
+	wsCancel      context.CancelFunc
+	earlyMessages []model.WebSocketMessage
 }
 
 func (w *WebSocket) Render() app.UI {
@@ -74,7 +75,8 @@ func (w *WebSocket) write(ctx app.Context, action app.Action) {
 			return
 		}
 		if w.conn == nil {
-			fmt.Println("w.conn is nil, aborting")
+			fmt.Println("w.conn is nil, queueing message")
+			w.earlyMessages = append(w.earlyMessages, wsm)
 			return
 		}
 
@@ -87,6 +89,7 @@ func (w *WebSocket) write(ctx app.Context, action app.Action) {
 }
 
 func (w *WebSocket) OnMount(ctx app.Context) {
+	fmt.Println("compo/websocket/Websocket.OnMount")
 	w.establishClientId(ctx)
 	Action(ctx).handle(w)
 	ctx.Async(func() { w.connectWebSocket(ctx) })
