@@ -1,0 +1,243 @@
+body {
+    color: cadetblue;
+    font-family: Roboto, serif;
+    background-color: black;
+    margin: 0;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #333;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #444;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.navigation {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    padding-top: 10px;
+    height: 40px;
+    width: 100%;
+    background-color: black;
+}
+
+.navigation-left {
+    display: flex;
+    flex-direction: row;
+    line-height: 40px;
+    padding-left: 10px;
+    font-size: larger;
+    font-weight: bold;
+}
+
+.navigation-left img {
+    padding-top: 5px;
+    width: 30px;
+    height: 30px;
+}
+
+.navigation-center {
+    display: flex;
+    flex-direction: row;
+    line-height: 40px;
+    font-size: larger;
+    font-weight: bold;
+}
+
+.navigation-center svg {
+    transform: scale(0.5);
+    fill: cadetblue;
+    position: relative;
+    top: -4px;
+    right: 30px;
+}
+
+
+.navigation-center div {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.navigation-right {
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    line-height: 40px;
+    padding-right: 20px;
+    font-weight: bold;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 100px 2vw;
+}
+
+.main-content-album-card {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    width: 250px;
+}
+
+.main-content-album-card img {
+    width: 250px;
+    height: 250px;
+    cursor: pointer;
+}
+
+.main-content-album-title {
+    width: 250px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.main-content-album-artist {
+    width: 250px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.main-content-large-image img {
+    width: 500px;
+    height: 500px;
+}
+
+.main-content-album-tracks {
+    display: flex;
+    flex-direction: column;
+    padding-left: 20px;
+
+}
+
+.main-content-album-tracks svg {
+    fill: cadetblue;
+}
+
+
+.audio-control {
+    cursor: not-allowed;
+}
+
+.audio-control svg {
+    fill: dimgray;
+}
+
+.audio-control-enabled {
+    cursor: pointer;
+}
+
+.audio-control-enabled svg {
+    fill: cadetblue;
+}
+
+.queue {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    height: 70px;
+    width: 100%;
+    background-color: #333;
+}
+
+.queue-vertical {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: inherit;
+}
+
+.audio-progress {
+    background-color: #050505;
+    position: fixed;
+    bottom: 70px;
+    height: 6px;
+    width: 100%;
+    cursor: crosshair;
+}
+
+.audio-slider {
+    background-color: firebrick;
+    height: 6px;
+}
+
+.audio-time {
+    line-height: 50px;
+    padding-left: 10px;
+}
+
+.queue-controls {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 4px;
+    flex-direction: row;
+}
+
+.audio-controls {
+    display: inherit;
+    flex-direction: row;
+}
+
+.queue-playing {
+    display: flex;
+    flex-direction: row;
+    padding-right: 50px;
+}
+
+.queue-playing-img {
+    width: 48px;
+    height: 48px;
+}
+
+.queue-playing-text {
+    padding-top: 10px;
+    padding-left: 12px;
+}
+
+.queue-expand {
+    padding-left: 4vw;
+    padding-right: 0.5vw;
+}
+
+.queue-expand svg {
+    fill: cadetblue;
+}
+
+.queue-clear {
+    display: flex;
+    flex-direction: row;
+    line-height: 48px;
+    cursor: pointer;
+    z-index: 0;
+}
+
+.queue-clear svg {
+    position: relative;
+    left: -9px;
+    fill: cadetblue;
+}
+
+.album-track-row {
+    cursor: pointer;
+}

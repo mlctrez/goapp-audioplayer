@@ -1,0 +1,291 @@
+{
+  "module": "github.com/mlctrez/goapp-audioplayer",
+  "methods": [
+    {
+      "name": "Search",
+      "request": "SearchRequest",
+      "response": "SearchResponse"
+    },
+    {
+      "name": "Albums",
+      "request": "AlbumsRequest",
+      "response": "AlbumsResponse"
+    },
+    {
+      "name": "Album",
+      "request": "AlbumRequest",
+      "response": "AlbumResponse"
+    },
+    {
+      "name": "PlayLists",
+      "request": "PlayListsRequest",
+      "response": "PlayListsResponse"
+    }
+  ],
+  "types": [
+    {
+      "name": "AlbumsRequest",
+      "fields": [
+        {
+          "name": "Query",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "AlbumsResponse",
+      "fields": [
+        {
+          "name": "Results",
+          "type": "[]*AlbumCard"
+        }
+      ]
+    },
+    {
+      "name": "AlbumCard",
+      "fields": [
+        {
+          "name": "ReleaseGroupID",
+          "type": "string"
+        },
+        {
+          "name": "Album",
+          "type": "string"
+        },
+        {
+          "name": "Artist",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "AlbumRequest",
+      "fields": [
+        {
+          "name": "ReleaseGroupID",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "AlbumResponse",
+      "fields": [
+        {
+          "name": "ReleaseGroupID",
+          "type": "string"
+        },
+        {
+          "name": "Tracks",
+          "type": "[]*ReleaseTrack"
+        }
+      ]
+    },
+    {
+      "name": "ReleaseGroupsResponse",
+      "fields": [
+        {
+          "name": "Groups",
+          "type": "[]*ReleaseGroup",
+          "json": "release_groups"
+        }
+      ]
+    },
+    {
+      "name": "ReleaseGroup",
+      "fields": [
+        {
+          "name": "ID",
+          "type": "string",
+          "json": "ID"
+        },
+        {
+          "name": "CoverArt",
+          "type": "string",
+          "json": "CoverArt"
+        },
+        {
+          "name": "SortKey",
+          "type": "string",
+          "json": "SortKey"
+        },
+        {
+          "name": "Tracks",
+          "type": "[]*ReleaseTrack",
+          "json": "Tracks"
+        }
+      ]
+    },
+    {
+      "name": "ReleaseTrack",
+      "fields": [
+        {
+          "name": "ID",
+          "type": "string",
+          "json": "ID"
+        },
+        {
+          "name": "Metadata",
+          "type": "*Metadata",
+          "json": "Metadata"
+        }
+      ]
+    },
+    {
+      "name": "Metadata",
+      "fields": [
+        {
+          "name": "Path",
+          "type": "string"
+        },
+        {
+          "name": "Size",
+          "type": "int64"
+        },
+        {
+          "name": "ModTime",
+          "type": "time.Time",
+          "json": "mod_time"
+        },
+        {
+          "name": "Album",
+          "type": "string"
+        },
+        {
+          "name": "AlbumArtist",
+          "type": "string"
+        },
+        {
+          "name": "Artist",
+          "type": "string"
+        },
+        {
+          "name": "Composer",
+          "type": "string"
+        },
+        {
+          "name": "Date",
+          "type": "string"
+        },
+        {
+          "name": "DiscNumber",
+          "type": "string"
+        },
+        {
+          "name": "DiscTotal",
+          "type": "string"
+        },
+        {
+          "name": "MusicbrainzAlbumArtistId",
+          "type": "string",
+          "json": "musicbrainz_albumartistid"
+        },
+        {
+          "name": "MusicbrainzAlbumId",
+          "type": "string",
+          "json": "musicbrainz_albumid"
+        },
+        {
+          "name": "MusicbrainzArtistId",
+          "type": "string",
+          "json": "musicbrainz_artistid"
+        },
+        {
+          "name": "MusicbrainzReleaseGroupId",
+          "type": "string",
+          "json": "musicbrainz_releasegroupid"
+        },
+        {
+          "name": "MusicbrainzReleaseTrackId",
+          "type": "string",
+          "json": "musicbrainz_releasetrackid"
+        },
+        {
+          "name": "MusicbrainzTrackId",
+          "type": "string",
+          "json": "musicbrainz_trackid"
+        },
+        {
+          "name": "MusicbrainzWorkId",
+          "type": "string",
+          "json": "musicbrainz_workid"
+        },
+        {
+          "name": "Performer",
+          "type": "string"
+        },
+        {
+          "name": "Title",
+          "type": "string"
+        },
+        {
+          "name": "TrackNumber",
+          "type": "string"
+        },
+        {
+          "name": "TrackTotal",
+          "type": "string"
+        },
+        {
+          "name": "Seconds",
+          "type": "uint64"
+        }
+      ]
+    },
+    {
+      "name": "SearchRequest",
+      "fields": [
+        {
+          "name": "Search",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "SearchResponse",
+      "fields": [
+        {
+          "name": "Groups",
+          "type": "[]*ReleaseGroup",
+          "json": "release_groups"
+        }
+      ]
+    },
+    {
+      "name": "PlayList",
+      "fields": [
+        {
+          "name": "Name",
+          "type": "string"
+        },
+        {
+          "name": "CurrentIndex",
+          "type": "int64",
+          "json": "current_index"
+        },
+        {
+          "name": "Tracks",
+          "type": "[]*Metadata"
+        }
+      ]
+    },
+    {
+      "name": "PlayListsRequest",
+      "fields": [
+        {
+          "name": "Names",
+          "type": "[]string"
+        }
+      ]
+    },
+    {
+      "name": "PlayListsResponse",
+      "fields": [
+        {
+          "name": "PlayLists",
+          "type": "[]*PlayList",
+          "json": "play_lists"
+        }
+      ]
+    }
+  ]
+}
