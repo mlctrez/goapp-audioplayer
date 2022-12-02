@@ -74,6 +74,7 @@ func (w *WebSocket) write(ctx app.Context, action app.Action) {
 			app.Log("websocket.write serialize error", err)
 			return
 		}
+
 		if w.conn == nil {
 			fmt.Println("w.conn is nil, queueing message")
 			w.earlyMessages = append(w.earlyMessages, wsm)
@@ -112,6 +113,13 @@ func (w *WebSocket) connectWebSocket(ctx app.Context) {
 	} else {
 		// bump up the max payload size
 		w.conn.SetReadLimit(1024 * 1024)
+
+		if w.earlyMessages != nil {
+			for _, message := range w.earlyMessages {
+				w.write(ctx, app.Action{Value: message})
+			}
+			w.earlyMessages = []model.WebSocketMessage{}
+		}
 
 		go w.readMessage(ctx)
 	}
