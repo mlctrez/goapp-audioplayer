@@ -55,18 +55,20 @@ body {
 .navigation-center {
     display: flex;
     flex-direction: row;
-    line-height: 40px;
+    line-height: 48px;
     font-size: larger;
     font-weight: bold;
     cursor: pointer;
 }
 
-.navigation-center svg {
-    transform: scale(0.5);
+.navigation-icon svg {
     fill: cadetblue;
-    position: relative;
-    top: -4px;
-    right: 30px;
+    cursor: pointer;
+}
+
+.navigation-icon-disabled svg {
+    fill: dimgray;
+    cursor: not-allowed;
 }
 
 
@@ -181,7 +183,7 @@ body {
     bottom: 70px;
     height: 6px;
     width: 100%;
-    cursor: crosshair;
+    cursor: pointer;
 }
 
 .audio-slider {

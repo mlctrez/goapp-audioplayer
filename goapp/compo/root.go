@@ -22,7 +22,6 @@ func (r *Root) OnMount(ctx app.Context) {
 }
 
 func (r *Root) Render() app.UI {
-	r.Log("")
 	return app.Div().ID("compo-Root").Body(
 		&updater.Updater{},
 		&websocket.WebSocket{},

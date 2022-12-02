@@ -332,15 +332,6 @@ func (c *Catalog) Albums(_ string, _ *model.AlbumsRequest) (response *model.Albu
 		response.Results[i], response.Results[j] = response.Results[j], response.Results[i]
 	})
 
-	response.Results = response.Results[0:12]
-
-	//sort.SliceStable(response.Results, func(i, j int) bool {
-	//	if response.Results[i].Artist != response.Results[j].Artist {
-	//		return response.Results[i].Artist < response.Results[j].Artist
-	//	}
-	//	return response.Results[i].Album < response.Results[j].Album
-	//})
-
 	return
 }
 

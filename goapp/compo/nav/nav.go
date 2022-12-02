@@ -5,6 +5,7 @@ import (
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 	"github.com/mlctrez/goapp-audioplayer/goapp"
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/websocket"
+	"github.com/mlctrez/goapp-audioplayer/internal/icon"
 	"github.com/mlctrez/goapp-audioplayer/model"
 	"strings"
 )
@@ -17,18 +18,19 @@ func (n *Navigation) Render() app.UI {
 	return app.Div().Class("navigation").Body(
 		app.Div().Class("navigation-left").Body(
 			app.Div().Body(app.Img().Src("/web/logo-192.png")),
-			app.Div().Body(app.Text("Music")),
+			app.Div().Body(app.Text("mlctrez Music")),
 		).OnClick(n.navigationLeft),
 		app.Div().Class("navigation-center").Body(
-			//app.Div().Body(app.Text("Home")),
-			app.Div().Body(app.Text("Explore")).Style("cursor", "pointer").OnClick(func(ctx app.Context, e app.Event) {
-				websocket.Action(ctx).Write(&model.AlbumsRequest{})
-			}),
-			//app.Div().Body(app.Text("Search")),
-			//app.Raw(icon.Search48()),
-		),
+			&Icon{StateName: "navigation.previous", SvgFunc: icon.NavigateBefore48},
+			app.Div().Body(app.Text("Randomize")).OnClick(n.requestAlbums),
+			&Icon{StateName: "navigation.next", SvgFunc: icon.NavigateNext48},
+		).Style("cursor", "pointer"),
 		n.version(),
 	)
+}
+
+func (n *Navigation) requestAlbums(ctx app.Context, e app.Event) {
+	websocket.Action(ctx).Write(&model.AlbumsRequest{})
 }
 
 func (n *Navigation) version() app.UI {
@@ -45,4 +47,30 @@ func (n *Navigation) version() app.UI {
 
 func (n *Navigation) navigationLeft(ctx app.Context, e app.Event) {
 	ctx.Reload()
+}
+
+type Icon struct {
+	app.Compo
+	SvgFunc    func() string
+	StateName  string
+	stateValue string
+}
+
+func (i *Icon) Render() app.UI {
+	comp := app.Div().Body(app.Raw(i.SvgFunc()))
+	if i.stateValue != "" {
+		comp.Class("navigation-icon")
+		comp.OnClick(i.click)
+	} else {
+		comp.Class("navigation-icon-disabled")
+	}
+	return comp
+}
+
+func (i *Icon) OnMount(ctx app.Context) {
+	ctx.ObserveState(i.StateName).Value(&i.stateValue)
+}
+
+func (i *Icon) click(ctx app.Context, e app.Event) {
+	ctx.NewAction(i.StateName)
 }
