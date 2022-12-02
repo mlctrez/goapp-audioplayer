@@ -33,5 +33,5 @@ func UpdateInterval() time.Duration {
 	if IsDevelopment() {
 		return 3 * time.Second
 	}
-	return 24 * time.Hour
+	return 1 * time.Hour
 }

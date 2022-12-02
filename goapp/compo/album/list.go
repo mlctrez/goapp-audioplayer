@@ -74,6 +74,7 @@ func (l *List) next(ctx app.Context, _ app.Action) {
 		ctx.SetState("navigation.next", "on")
 	}
 	ctx.SetState("navigation.previous", "on")
+	ctx.SetState("displayMode", "album.List")
 }
 
 func (l *List) previous(ctx app.Context, _ app.Action) {
@@ -83,5 +84,5 @@ func (l *List) previous(ctx app.Context, _ app.Action) {
 		l.listPosition = 0
 		ctx.SetState("navigation.previous", "")
 	}
-
+	ctx.SetState("displayMode", "album.List")
 }

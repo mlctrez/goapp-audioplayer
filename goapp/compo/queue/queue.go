@@ -35,10 +35,12 @@ func (q *Queue) HasNext() bool {
 }
 
 func (q *Queue) SetCurrent(ctx app.Context) {
+	ctx.Page().SetTitle(q.CurrentTrack().Title)
 	audio.Action(ctx).Src(q.currentUrl())
 }
 
 func (q *Queue) StartCurrent(ctx app.Context) {
+	ctx.Page().SetTitle(q.CurrentTrack().Title)
 	audio.Action(ctx).Start(q.currentUrl())
 }
 
@@ -65,14 +67,12 @@ func (q *Queue) Next(ctx app.Context) {
 		q.Index++
 		q.persist(ctx)
 		q.StartCurrent(ctx)
+	} else {
+		ctx.Page().SetTitle("mlctrez Music")
+		// enable play button when last song in queue ends
+		ctx.NewAction(audio.EventPause)
 	}
 }
-
-//func (q *Queue) Toggle(ctx app.Context, _ app.Event) {
-//	q.persist(ctx)
-//	// for Display to pick up and display the queue on the screen
-//	ctx.NewAction("queue.toggle")
-//}
 
 func (q *Queue) Seek(ctx app.Context, index int) {
 	if index > -1 && index < len(q.Tracks)-1 {
