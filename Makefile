@@ -3,15 +3,16 @@ APP_NAME=music
 
 VERSION=$(shell git describe --abbrev=0 --tags 2>/dev/null || echo "v0.0.0")
 COMMIT=$(shell git rev-parse --short HEAD || echo "HEAD")
-MODULE=$(shell grep ^module go.mod | awk '{print $$2;}')
-LD_FLAGS="-w -X $(MODULE)/goapp.Version=$(VERSION) -X $(MODULE)/goapp.Commit=$(COMMIT)"
+MOD=$(shell grep ^module go.mod | awk '{print $$2;}')
+DIR=$(shell pwd)
+LD_FLAGS="-w -X $(MOD)/goapp.Version=$(VERSION) -X $(MOD)/goapp.Commit=$(COMMIT) -X $(MOD)/goapp.BuildDir=$(DIR) -X $(MOD)/goapp.Module=$(MOD)"
 MAIN="goapp/service/main/main.go"
 
 .PHONY: model
 
 run: binary
 	# ADDRESS=:9021
-	@DEV=1 ADDRESS=:9021 ./temp/$(APP_NAME)
+	@DEV=1 ADDRESS=localhost:9021 ./temp/$(APP_NAME)
 
 binary: wasm
 	@mkdir -p temp

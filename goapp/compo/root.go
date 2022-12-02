@@ -1,7 +1,6 @@
 package compo
 
 import (
-	"fmt"
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 	"github.com/mlctrez/goapp-audioplayer/goapp"
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/album"
@@ -15,21 +14,23 @@ import (
 
 type Root struct {
 	app.Compo
+	goapp.Logging
 }
 
 func (r *Root) OnMount(ctx app.Context) {
-	fmt.Println("RuntimeVersion", goapp.RuntimeVersion())
+	r.Logf("version %s", goapp.RuntimeVersion())
 }
 
 func (r *Root) Render() app.UI {
-	return app.Div().Body(
+	r.Log("")
+	return app.Div().ID("compo-Root").Body(
 		&updater.Updater{},
 		&websocket.WebSocket{},
 		&audio.Audio{},
 		&nav.Navigation{},
-		&queue.Component{},
-		&album.Album{},
-		&album.List{},
 		&player.Player{},
+		&queue.Display{},
+		&album.List{},
+		&album.Album{},
 	)
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
+	"github.com/mlctrez/goapp-audioplayer/goapp"
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/nodisplay"
 	"github.com/mlctrez/goapp-audioplayer/model"
 	"nhooyr.io/websocket"
@@ -26,9 +27,13 @@ func (ac *Actions) Write(message model.WebSocketMessage) {
 	ac.NewActionWithValue("websocket.write", message)
 }
 
-func (ac *Actions) HandleAction(messageType model.WebSocketMessage, handler func(message model.WebSocketMessage)) {
-	ac.Handle("websocket.read."+messageType.WebSocketMessageName(), func(c app.Context, action app.Action) {
-		handler(action.Value.(model.WebSocketMessage))
+type MessageHandler interface {
+	OnWebsocketMessage(ctx app.Context, message model.WebSocketMessage)
+}
+
+func (ac *Actions) HandleAction(m model.WebSocketMessage, handler MessageHandler) {
+	ac.Handle("websocket.read."+m.WebSocketMessageName(), func(c app.Context, action app.Action) {
+		handler.OnWebsocketMessage(c, action.Value.(model.WebSocketMessage))
 	})
 }
 
@@ -38,6 +43,7 @@ func (ac *Actions) handle(webSocket *WebSocket) {
 
 type WebSocket struct {
 	app.Compo
+	goapp.Logging
 	clientId      string
 	conn          *websocket.Conn
 	wsContext     context.Context
@@ -53,13 +59,13 @@ func (w *WebSocket) establishClientId(ctx app.Context) {
 	var err error
 	err = ctx.LocalStorage().Get("websocket.client.id", &w.clientId)
 	if err != nil {
-		app.Log("error getting client id from local storage", err)
+		w.Logf("error getting client id from local storage : %s", err)
 	}
 	if w.clientId == "" {
 		w.clientId = uuid.NewString()
 		err = ctx.LocalStorage().Set("websocket.client.id", w.clientId)
 		if err != nil {
-			app.Log("error setting client id to local storage", err)
+			w.Logf("error setting client id to local storage : %s", err)
 		}
 	}
 }
@@ -71,18 +77,18 @@ func (w *WebSocket) write(ctx app.Context, action app.Action) {
 		//app.Log("write message ", wsm.WebSocketMessageName())
 
 		if err != nil {
-			app.Log("websocket.write serialize error", err)
+			w.Logf("websocket.write serialize error : %s", err)
 			return
 		}
 
 		if w.conn == nil {
-			fmt.Println("w.conn is nil, queueing message")
+			w.Log("w.conn is nil, queueing message")
 			w.earlyMessages = append(w.earlyMessages, wsm)
 			return
 		}
 
 		if err = w.conn.Write(w.wsContext, websocket.MessageBinary, data); err != nil {
-			app.Log("websocket.write err", err)
+			w.Logf("websocket.write error : %s", err)
 			w.cancelReconnect(ctx)
 		}
 
@@ -90,7 +96,7 @@ func (w *WebSocket) write(ctx app.Context, action app.Action) {
 }
 
 func (w *WebSocket) OnMount(ctx app.Context) {
-	fmt.Println("compo/websocket/Websocket.OnMount")
+	w.Log("")
 	w.establishClientId(ctx)
 	Action(ctx).handle(w)
 	ctx.Async(func() { w.connectWebSocket(ctx) })
@@ -108,7 +114,6 @@ func (w *WebSocket) connectWebSocket(ctx app.Context) {
 	wsUri := fmt.Sprintf("%s/ws/%s", BaseWs(), w.clientId)
 	var err error
 	if w.conn, _, err = websocket.Dial(w.wsContext, wsUri, nil); err != nil {
-		//app.Log("connectWebSocket websocket.Dial error:", err)
 		w.cancelReconnect(ctx)
 	} else {
 		// bump up the max payload size
@@ -126,7 +131,7 @@ func (w *WebSocket) connectWebSocket(ctx app.Context) {
 }
 
 func (w *WebSocket) readMessage(ctx app.Context) {
-	fmt.Println("compo/websocket/Websocket.readMessage")
+	w.Log("")
 	for {
 		var err error
 		var data []byte
@@ -141,7 +146,6 @@ func (w *WebSocket) readMessage(ctx app.Context) {
 				app.Logf("model.DecodeResponse error: %s", err)
 				return
 			}
-			//app.Log("read message ", msg.WebSocketMessageName())
 			ctx.NewActionWithValue("websocket.read."+msg.WebSocketMessageName(), msg)
 		}
 	}

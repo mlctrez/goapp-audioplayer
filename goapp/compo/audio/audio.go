@@ -1,8 +1,8 @@
 package audio
 
 import (
-	"fmt"
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
+	"github.com/mlctrez/goapp-audioplayer/goapp"
 	"time"
 )
 
@@ -38,6 +38,7 @@ func (ac *Actions) handle(audio *Audio) {
 
 type Audio struct {
 	app.Compo
+	goapp.Logging
 }
 
 func (a *Audio) Render() app.UI {
@@ -69,13 +70,12 @@ func (a *Audio) eventListener(ctx app.Context) app.Func {
 		case "pause":
 			ctx.NewAction(EventPause)
 		case "play":
-			lastTimeUpdate = time.Now().Add(-10 * time.Second)
+			lastTimeUpdate = time.Now().Add(-1 * time.Second)
 			ctx.NewAction(EventPlay)
 		case "seeked":
-			lastTimeUpdate = time.Now().Add(-10 * time.Second)
+			lastTimeUpdate = time.Now().Add(-1 * time.Second)
 			ctx.NewAction(EventSeeked)
 		case "timeupdate":
-			// issue action for time once per second
 			now := time.Now()
 			if now.Sub(lastTimeUpdate) > time.Millisecond*200 {
 				lastTimeUpdate = now
@@ -115,7 +115,7 @@ func (a *Audio) OnMount(ctx app.Context) {
 
 func (a *Audio) src(ctx app.Context, action app.Action) {
 	if url, ok := action.Value.(string); ok {
-		fmt.Printf("audio.src = %q\n", url)
+		a.Logf("src=%q", url)
 		if url == "" {
 			a.pause(ctx, action)
 		}

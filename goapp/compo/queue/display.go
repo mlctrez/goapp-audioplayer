@@ -3,6 +3,7 @@ package queue
 import (
 	"fmt"
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
+	"github.com/mlctrez/goapp-audioplayer/goapp"
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/audio"
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/nodisplay"
 	"github.com/mlctrez/goapp-audioplayer/internal/icon"
@@ -10,15 +11,19 @@ import (
 	"time"
 )
 
-type Component struct {
+type Display struct {
 	app.Compo
-	queue Queue
+	goapp.Logging
+	queue       Queue
+	displayMode string
 }
 
-func (c *Component) Render() app.UI {
+func (d *Display) Render() app.UI {
 
-	if !c.queue.Shown {
-		return nodisplay.NoDisplay("compo/queue/Component")
+	d.Logf("displayMode %s", d.displayMode)
+
+	if d.displayMode != "queue.Display" {
+		return nodisplay.NoDisplay("compo/queue/Display")
 	}
 
 	var rows []app.UI
@@ -32,7 +37,7 @@ func (c *Component) Render() app.UI {
 
 	var totalDuration time.Duration
 
-	for indexLoop, trackLoop := range c.queue.Tracks {
+	for indexLoop, trackLoop := range d.queue.Tracks {
 		index := indexLoop
 		md := trackLoop
 		image := app.Img().Width(30).Height(30).Src(fmt.Sprintf("/cover/%s", md.MusicbrainzReleaseGroupId))
@@ -48,11 +53,11 @@ func (c *Component) Render() app.UI {
 			app.Td().Style("text-align", "right").Text(formatDuration(duration)),
 		)
 
-		if index == c.queue.Index {
+		if index == d.queue.Index {
 			tr.Style("background-color", "#222")
 		}
 		tr.Style("cursor", "pointer").OnClick(func(ctx app.Context, e app.Event) {
-			c.queue.Seek(ctx, index)
+			d.queue.Seek(ctx, index)
 		})
 
 		rows = append(rows, tr)
@@ -74,49 +79,50 @@ func (c *Component) Render() app.UI {
 
 }
 
-func (c *Component) OnMount(ctx app.Context) {
-	ctx.ObserveState("queue").Value(&c.queue)
+func (d *Display) OnMount(ctx app.Context) {
+	ctx.ObserveState("queue").Value(&d.queue)
+	ctx.ObserveState("displayMode").Value(&d.displayMode)
 
-	//fmt.Printf("queue.Component.OnMount c.queue = %+v\n", c.queue)
-
-	if c.queue.HasCurrent() {
-		c.queue.SetCurrent(ctx)
+	if d.queue.HasCurrent() {
+		d.queue.SetCurrent(ctx)
 		// this enables the play button
 		ctx.NewAction(audio.EventPause)
 	}
 
-	ctx.Handle("queue.add", c.add)
-	ctx.Handle("queue.clear", c.clear)
-	ctx.Handle("queue.toggle", c.toggle)
+	ctx.Handle("queue.add", d.add)
+	ctx.Handle("queue.clear", d.clear)
+	ctx.Handle("queue.toggle", d.toggle)
 
 }
 
-func (c *Component) add(ctx app.Context, action app.Action) {
+func (d *Display) add(ctx app.Context, action app.Action) {
 
-	wasEmpty := len(c.queue.Tracks) == 0
+	wasEmpty := len(d.queue.Tracks) == 0
 
 	switch v := action.Value.(type) {
 	case *model.Metadata:
-		c.queue.Tracks = append(c.queue.Tracks, v)
+		d.queue.Tracks = append(d.queue.Tracks, v)
 	case []*model.Metadata:
-		c.queue.Tracks = append(c.queue.Tracks, v...)
+		d.queue.Tracks = append(d.queue.Tracks, v...)
 	default:
 		return
 	}
 	if wasEmpty {
-		c.queue.StartCurrent(ctx)
+		d.queue.StartCurrent(ctx)
 	}
-	c.queue.persist(ctx)
+	d.queue.persist(ctx)
 }
 
-func (c *Component) clear(ctx app.Context, _ app.Action) {
+func (d *Display) clear(ctx app.Context, _ app.Action) {
 	// stop the playing audio if any
 	audio.Action(ctx).Src("")
+	ctx.SetState("displayMode", "album.List")
 	// clear the queue
-	c.queue.Clear(ctx)
+	d.queue.Clear(ctx)
+
 }
 
-func (c *Component) toggle(ctx app.Context, _ app.Action) {
-	ctx.GetState("queue", &c.queue)
-	c.Update()
+func (d *Display) toggle(ctx app.Context, _ app.Action) {
+	ctx.GetState("queue", &d.queue)
+	d.Update()
 }

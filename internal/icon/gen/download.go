@@ -11,10 +11,14 @@ import (
 
 func main() {
 	// https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsrounded/skip_previous/fill1/40px.svg
+	// https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/play_arrow/wght200fill1/48px.svg
 
-	svgUrl := "https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsrounded/%s/fill1/%s.svg"
+	svgUrl := "https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsrounded/%s/wght200fill1/%s.svg"
 
-	icons := []string{"skip_previous", "skip_next", "play_arrow", "pause", "expand_more", "expand_less", "search", "close"}
+	icons := []string{
+		"skip_previous", "skip_next", "play_arrow", "pause",
+		"expand_more", "expand_less", "search", "close",
+		"playlist_add"}
 	sizes := []string{"48px"}
 
 	jf := jen.NewFilePath("github.com/mlctrez/goapp-audioplayer/internal/icon")

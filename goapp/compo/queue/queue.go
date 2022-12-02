@@ -1,7 +1,6 @@
 package queue
 
 import (
-	"fmt"
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/audio"
 	"github.com/mlctrez/goapp-audioplayer/model"
@@ -10,7 +9,6 @@ import (
 type Queue struct {
 	Index  int
 	Tracks []*model.Metadata
-	Shown  bool
 }
 
 func (q *Queue) persist(ctx app.Context) {
@@ -51,7 +49,6 @@ func (q *Queue) currentUrl() string {
 func (q *Queue) Clear(ctx app.Context) {
 	q.Index = 0
 	q.Tracks = []*model.Metadata{}
-	q.Shown = false
 	q.persist(ctx)
 }
 
@@ -71,13 +68,11 @@ func (q *Queue) Next(ctx app.Context) {
 	}
 }
 
-func (q *Queue) Toggle(ctx app.Context, _ app.Event) {
-	q.Shown = !q.Shown
-	fmt.Println("Queue.Toggle", q.Shown)
-	q.persist(ctx)
-	// for Component to pick up and display the queue on the screen
-	ctx.NewAction("queue.toggle")
-}
+//func (q *Queue) Toggle(ctx app.Context, _ app.Event) {
+//	q.persist(ctx)
+//	// for Display to pick up and display the queue on the screen
+//	ctx.NewAction("queue.toggle")
+//}
 
 func (q *Queue) Seek(ctx app.Context, index int) {
 	if index > -1 && index < len(q.Tracks)-1 {

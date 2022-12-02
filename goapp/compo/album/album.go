@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/nodisplay"
-	"github.com/mlctrez/goapp-audioplayer/goapp/compo/queue"
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/websocket"
 	"github.com/mlctrez/goapp-audioplayer/internal/icon"
 	"github.com/mlctrez/goapp-audioplayer/model"
@@ -14,24 +13,24 @@ import (
 
 type Album struct {
 	app.Compo
-	album *model.AlbumResponse
-	queue queue.Queue
+	album       *model.AlbumResponse
+	displayMode string
 }
 
 func (t *Album) OnMount(ctx app.Context) {
-	ctx.ObserveState("queue").Value(&t.queue)
-	websocket.Action(ctx).HandleAction(&model.AlbumResponse{}, t.message)
+	ctx.ObserveState("displayMode").Value(&t.displayMode)
+	websocket.Action(ctx).HandleAction(&model.AlbumResponse{}, t)
 }
 
-func (t *Album) message(message model.WebSocketMessage) {
+func (t *Album) OnWebsocketMessage(ctx app.Context, message model.WebSocketMessage) {
 	t.album = message.(*model.AlbumResponse)
-	t.Update()
+	ctx.SetState("displayMode", "album.Album")
 }
 
 func (t *Album) Render() app.UI {
 
-	if t.queue.Shown || t.album == nil {
-		return nodisplay.NoDisplay("compo/album/Album")
+	if t.album == nil || t.displayMode != "album.Album" {
+		return nodisplay.NoDisplay("compo/album/List")
 	}
 
 	var albumTitle string
@@ -69,16 +68,18 @@ func (t *Album) Render() app.UI {
 			),
 			app.Td().Body(
 				app.Div().Style("display", "flex").Style("flex-direction", "column").Body(
-					app.Div().Style("position", "relative").Style("left", "-10px").Body(app.Raw(icon.Close48())).OnClick(func(ctx app.Context, e app.Event) {
+					app.Div().Style("position", "relative").Style("left", "-10px").
+						Body(app.Raw(icon.Close48())).OnClick(func(ctx app.Context, e app.Event) {
+
 						t.album = nil
-						t.Update()
+						ctx.SetState("displayMode", "album.List")
+
 					}),
-					app.Div().Style("position", "relative").Style("left", "-10px").Body(app.Raw(icon.PlayArrow48())).OnClick(func(ctx app.Context, e app.Event) {
-						var allTracks []*model.Metadata
-						for _, track := range t.album.Tracks {
-							allTracks = append(allTracks, track.Metadata)
-						}
-						ctx.NewActionWithValue("queue.add", allTracks)
+					app.Div().Style("position", "relative").Style("left", "-10px").
+						Body(app.Raw(icon.PlaylistAdd48())).OnClick(func(ctx app.Context, e app.Event) {
+
+						ctx.NewActionWithValue("queue.add", t.album.TracksMetadata())
+
 					}),
 				),
 			),
