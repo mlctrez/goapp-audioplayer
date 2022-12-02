@@ -19,7 +19,7 @@ binary: wasm
 	@go build -o temp/$(APP_NAME) -ldflags $(LD_FLAGS) $(MAIN)
 
 wasm: model
-	@#rm -f goapp/web/app.wasm
+	@rm -f goapp/web/app.wasm
 	@GOARCH=wasm GOOS=js go build -o goapp/web/app.wasm -ldflags $(LD_FLAGS) $(MAIN)
 
 model:

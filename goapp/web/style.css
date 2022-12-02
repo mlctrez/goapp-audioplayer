@@ -84,6 +84,11 @@ body {
     font-weight: bold;
 }
 
+.navigation-right a {
+    color: cadetblue;
+    text-decoration: none;
+}
+
 .main-content {
     display: flex;
     flex-direction: row;

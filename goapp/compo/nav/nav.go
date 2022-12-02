@@ -32,15 +32,15 @@ func (n *Navigation) Render() app.UI {
 }
 
 func (n *Navigation) version() app.UI {
-
 	div := app.Div().Class("navigation-right")
 	if goapp.IsDevelopment() {
-		return div.Body(app.Div().Text(goapp.RuntimeVersion()[0:5]))
+		div.Text(goapp.RuntimeVersion()[0:5])
 	} else {
 		version := strings.Split(goapp.RuntimeVersion(), "@")[0]
 		href := fmt.Sprintf("https://github.com/mlctrez/goapp-audioplayer/tree/%s", version)
-		return div.Body(app.A().Href(href)).Text(version)
+		div.Body(app.A().Href(href).Text(version))
 	}
+	return div
 }
 
 func (n *Navigation) navigationLeft(ctx app.Context, e app.Event) {
