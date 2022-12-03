@@ -18,7 +18,7 @@ func (a *Api) Register(engine *gin.Engine) {
 	// cover art by release group id
 	engine.GET("/cover/:uuid", a.getCover)
 
-	// overwrites cover art
+	// allows updating cover art with a new image
 	engine.POST("/cover/:uuid", a.setCover)
 
 	// flac file keyed by releaseGroupId_disc_track

@@ -42,8 +42,8 @@ func main() {
 
 	receiverFunc("Render").Params().Params(Qual(goApp, "UI")).Block(Return(Qual(goApp, "Div").Params()))
 
-	funcs := []string{"OnMount", "OnNav", "OnUpdate", "OnAppUpdate", "OnAppInstallChange", "OnResize"}
-	for _, s := range funcs {
+	functions := []string{"OnMount", "OnNav", "OnUpdate", "OnAppUpdate", "OnAppInstallChange", "OnResize"}
+	for _, s := range functions {
 		receiverFunc(s).Params(ctxParam()).Params().Block(Line())
 	}
 

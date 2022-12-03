@@ -31,11 +31,13 @@ func timeFormat(seconds float64) string {
 var _ app.Mounter = (*CurrentTime)(nil)
 
 func (t *CurrentTime) OnMount(ctx app.Context) {
-	ctx.Handle(audio.EventTimeUpdate, func(context app.Context, action app.Action) {
-		if tu, ok := action.Value.(*audio.TimeUpdate); ok {
-			t.current = tu.CurrentTime
-			t.duration = tu.Duration
-			t.Update()
-		}
-	})
+	ctx.Handle(audio.EventTimeUpdate, t.update)
+}
+
+func (t *CurrentTime) update(_ app.Context, action app.Action) {
+	if tu, ok := action.Value.(*audio.TimeUpdate); ok {
+		t.current = tu.CurrentTime
+		t.duration = tu.Duration
+		t.Update()
+	}
 }

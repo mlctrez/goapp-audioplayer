@@ -42,7 +42,7 @@ type Audio struct {
 }
 
 func (a *Audio) Render() app.UI {
-	return app.Audio().Src("") //.Controls(true)
+	return app.Audio().Src("")
 }
 
 const EventCanPlay = "audio.event.canplay"

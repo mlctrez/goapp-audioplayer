@@ -29,7 +29,7 @@ func (n *Navigation) Render() app.UI {
 	)
 }
 
-func (n *Navigation) requestAlbums(ctx app.Context, e app.Event) {
+func (n *Navigation) requestAlbums(ctx app.Context, _ app.Event) {
 	websocket.Action(ctx).Write(&model.AlbumsRequest{})
 }
 
@@ -45,7 +45,7 @@ func (n *Navigation) version() app.UI {
 	return div
 }
 
-func (n *Navigation) navigationLeft(ctx app.Context, e app.Event) {
+func (n *Navigation) navigationLeft(ctx app.Context, _ app.Event) {
 	ctx.Reload()
 }
 
@@ -71,6 +71,6 @@ func (i *Icon) OnMount(ctx app.Context) {
 	ctx.ObserveState(i.StateName).Value(&i.stateValue)
 }
 
-func (i *Icon) click(ctx app.Context, e app.Event) {
+func (i *Icon) click(ctx app.Context, _ app.Event) {
 	ctx.NewAction(i.StateName)
 }

@@ -12,8 +12,8 @@ import (
 )
 
 func (a *Api) releaseGroupTrack(context *gin.Context) {
+
 	key := context.Param("key")
-	// TODO: some sanity checks on the key format
 
 	var err error
 	var md *model.Metadata
@@ -36,16 +36,17 @@ func (a *Api) releaseGroupTrack(context *gin.Context) {
 
 	var start int64
 	if start, err = strconv.ParseInt(rangeParts[0], 10, 64); err != nil {
-		context.AbortWithError(http.StatusBadRequest, err)
+		_ = context.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
 	_, err = flacFile.Seek(start, io.SeekStart)
 	if err != nil {
-		context.AbortWithError(http.StatusInternalServerError, err)
+		_ = context.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
+	// send 2Mb at a time
 	maxSent := int64(2 * 1024 * 1024)
 
 	end := start + maxSent

@@ -9,14 +9,6 @@ import (
 	"strings"
 )
 
-/*
-
-Generate the minimum amount of files required.
-Group each method with its request and response pairs. -> <method>.go
-Group all non request response types into general.go
-
-*/
-
 func main() {
 
 	file, err := os.ReadFile("model/spec.json")

@@ -11,8 +11,8 @@ type Previous struct {
 	queue queue.Queue
 }
 
-func (n *Previous) OnMount(ctx app.Context) {
-	ctx.ObserveState("queue").Value(&n.queue)
+func (p *Previous) OnMount(ctx app.Context) {
+	ctx.ObserveState("queue").Value(&p.queue)
 }
 
 func (p *Previous) Render() app.UI {

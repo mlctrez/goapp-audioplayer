@@ -117,6 +117,6 @@ func (tr *TrackRow) Render() app.UI {
 	).OnClick(tr.click)
 }
 
-func (tr *TrackRow) click(ctx app.Context, e app.Event) {
+func (tr *TrackRow) click(ctx app.Context, _ app.Event) {
 	ctx.NewActionWithValue("queue.add", tr.Metadata)
 }

@@ -20,8 +20,6 @@ type Display struct {
 
 func (d *Display) Render() app.UI {
 
-	d.Logf("displayMode %s", d.displayMode)
-
 	if d.displayMode != "queue.Display" {
 		return nodisplay.NoDisplay("compo/queue/Display")
 	}

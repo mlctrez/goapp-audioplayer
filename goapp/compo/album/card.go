@@ -2,7 +2,7 @@ package album
 
 import (
 	"fmt"
-	app "github.com/maxence-charriere/go-app/v9/pkg/app"
+	"github.com/maxence-charriere/go-app/v9/pkg/app"
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/websocket"
 	"github.com/mlctrez/goapp-audioplayer/model"
 )
@@ -23,10 +23,6 @@ func (c *Card) Render() app.UI {
 	)
 }
 
-func (c *Card) click(ctx app.Context, e app.Event) {
+func (c *Card) click(ctx app.Context, _ app.Event) {
 	websocket.Action(ctx).Write(&model.AlbumRequest{ReleaseGroupID: c.ReleaseGroupID})
-}
-
-func (c *Card) OnMount(ctx app.Context) {
-
 }

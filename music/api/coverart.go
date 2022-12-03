@@ -20,8 +20,10 @@ func (a *Api) getCover(ctx *gin.Context) {
 		return
 	}
 
-	data, err := a.c.CoverArt(uu)
-	if err != nil || len(data) < 1000 {
+	var pngBytes []byte
+
+	pngBytes, err = a.c.CoverArt(uu)
+	if err != nil || len(pngBytes) < 1000 {
 		var logoBytes []byte
 		logoBytes, err = goapp.WebFs.ReadFile("web/logo-512.png")
 		if err != nil {
@@ -40,7 +42,7 @@ func (a *Api) getCover(ctx *gin.Context) {
 	if ctx.GetHeader("If-None-Match") == etag {
 		ctx.Status(http.StatusNotModified)
 	} else {
-		ctx.Data(200, "image/png", data)
+		ctx.Data(200, "image/png", pngBytes)
 	}
 
 }

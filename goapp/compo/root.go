@@ -17,7 +17,7 @@ type Root struct {
 	goapp.Logging
 }
 
-func (r *Root) OnMount(ctx app.Context) {
+func (r *Root) OnMount(_ app.Context) {
 	r.Logf("version %s", goapp.RuntimeVersion())
 }
 

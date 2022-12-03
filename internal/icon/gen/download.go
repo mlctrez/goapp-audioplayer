@@ -10,8 +10,6 @@ import (
 )
 
 func main() {
-	// https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsrounded/skip_previous/fill1/40px.svg
-	// https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/play_arrow/wght200fill1/48px.svg
 
 	svgUrl := "https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsrounded/%s/wght200fill1/%s.svg"
 
@@ -51,6 +49,7 @@ func main() {
 
 			}
 
+			jf.Line()
 			jf.Func().Id(IconName(icon, size)).Params().Params(jen.String()).Block(
 				jen.Return(jen.Lit(string(svgBytes))),
 			)

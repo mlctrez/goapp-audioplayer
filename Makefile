@@ -11,7 +11,6 @@ MAIN="goapp/service/main/main.go"
 .PHONY: model
 
 run: binary
-	# ADDRESS=:9021
 	@DEV=1 ADDRESS=localhost:9021 ./temp/$(APP_NAME)
 
 binary: wasm
