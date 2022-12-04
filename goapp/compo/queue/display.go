@@ -83,8 +83,12 @@ func (d *Display) OnMount(ctx app.Context) {
 
 	if d.queue.HasCurrent() {
 		d.queue.SetCurrent(ctx)
-		// this enables the play button
-		ctx.NewAction(audio.EventPause)
+		// defer a bit on first page load since the play button may not be mounted
+		// and capable of receiving the pause event
+		ctx.Defer(func(context app.Context) {
+			time.Sleep(500 * time.Millisecond)
+			context.NewAction(audio.EventPause)
+		})
 	}
 
 	ctx.Handle("queue.add", d.add)

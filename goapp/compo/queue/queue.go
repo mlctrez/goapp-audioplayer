@@ -115,7 +115,7 @@ func (q *Queue) Next(ctx app.Context) {
 }
 
 func (q *Queue) Seek(ctx app.Context, index int) {
-	if index > -1 && index < len(q.Tracks)-1 {
+	if index > -1 && index <= len(q.Tracks)-1 {
 		if q.Index == index {
 			// don't seek to currently playing track
 			return

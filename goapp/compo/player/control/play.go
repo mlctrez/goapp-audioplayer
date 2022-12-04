@@ -8,17 +8,10 @@ import (
 
 type PlayPause struct {
 	app.Compo
-	enabled     bool
 	audioPaused bool
 }
 
 func (p *PlayPause) OnMount(ctx app.Context) {
-	ctx.Handle(audio.EventCanPlay, func(_ app.Context, _ app.Action) {
-		p.enabled = true
-	})
-	ctx.Handle(audio.EventEnded, func(_ app.Context, _ app.Action) {
-		p.enabled = false
-	})
 	ctx.Handle(audio.EventPause, func(_ app.Context, _ app.Action) {
 		p.audioPaused = true
 	})
@@ -29,9 +22,9 @@ func (p *PlayPause) OnMount(ctx app.Context) {
 
 func (p *PlayPause) Render() app.UI {
 	if p.audioPaused {
-		return Div(p.enabled).Body(app.Raw(icon.PlayArrow48())).OnClick(p.play)
+		return Div(true).Body(app.Raw(icon.PlayArrow48())).OnClick(p.play)
 	} else {
-		return Div(p.enabled).Body(app.Raw(icon.Pause48())).OnClick(p.pause)
+		return Div(true).Body(app.Raw(icon.Pause48())).OnClick(p.pause)
 	}
 }
 
