@@ -9,14 +9,13 @@ import (
 
 type CurrentTime struct {
 	app.Compo
-	current  float64
-	duration float64
+	timeUpdate *audio.TimeUpdate
 }
 
 func (t *CurrentTime) Render() app.UI {
 	timeUI := app.Div().Class("audio-time")
-	if t.duration > 1 {
-		timeUI.Text(timeFormat(t.current) + " / " + timeFormat(t.duration))
+	if t.timeUpdate != nil {
+		timeUI.Text(timeFormat(t.timeUpdate.CurrentTime) + " / " + timeFormat(t.timeUpdate.Duration))
 	} else {
 		timeUI.Text("----:---- / ----:----")
 	}
@@ -36,8 +35,6 @@ func (t *CurrentTime) OnMount(ctx app.Context) {
 
 func (t *CurrentTime) update(_ app.Context, action app.Action) {
 	if tu, ok := action.Value.(*audio.TimeUpdate); ok {
-		t.current = tu.CurrentTime
-		t.duration = tu.Duration
-		t.Update()
+		t.timeUpdate = tu
 	}
 }

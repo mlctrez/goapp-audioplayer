@@ -38,7 +38,8 @@ func (d *Display) Render() app.UI {
 	for indexLoop, trackLoop := range d.queue.Tracks {
 		index := indexLoop
 		md := trackLoop
-		image := app.Img().Width(30).Height(30).Src(fmt.Sprintf("/cover/%s", md.MusicbrainzReleaseGroupId))
+		size := 40
+		image := app.Img().Width(size).Height(size).Src(fmt.Sprintf("/cover/%s", md.MusicbrainzReleaseGroupId))
 
 		duration := time.Second * time.Duration(md.Seconds)
 		totalDuration += duration
@@ -83,17 +84,23 @@ func (d *Display) OnMount(ctx app.Context) {
 
 	if d.queue.HasCurrent() {
 		d.queue.SetCurrent(ctx)
-		// defer a bit on first page load since the play button may not be mounted
-		// and capable of receiving the pause event
-		ctx.Defer(func(context app.Context) {
-			time.Sleep(500 * time.Millisecond)
-			context.NewAction(audio.EventPause)
-		})
 	}
 
 	ctx.Handle("queue.add", d.add)
 	ctx.Handle("queue.clear", d.clear)
-	ctx.Handle("queue.toggle", d.toggle)
+
+	// after 5 seconds this seems to work correctly
+	ctx.After(5*time.Second, func(context app.Context) {
+		mediaSession := app.Window().Get("navigator").Get("mediaSession")
+		mediaSession.Call("setActionHandler", "nexttrack", app.FuncOf(func(this app.Value, args []app.Value) any {
+			d.queue.Next(context)
+			return nil
+		}))
+		mediaSession.Call("setActionHandler", "previoustrack", app.FuncOf(func(this app.Value, args []app.Value) any {
+			d.queue.Previous(context)
+			return nil
+		}))
+	})
 
 }
 
@@ -111,20 +118,15 @@ func (d *Display) add(ctx app.Context, action app.Action) {
 	}
 	if wasEmpty {
 		d.queue.StartCurrent(ctx)
+		ctx.NewAction(audio.EventPlay)
 	}
 	d.queue.persist(ctx)
 }
 
 func (d *Display) clear(ctx app.Context, _ app.Action) {
 	// stop the playing audio if any
-	audio.Action(ctx).Src("")
+	audio.Action(ctx).Src(nil)
 	ctx.SetState("displayMode", "album.List")
 	// clear the queue
 	d.queue.Clear(ctx)
-
-}
-
-func (d *Display) toggle(ctx app.Context, _ app.Action) {
-	ctx.GetState("queue", &d.queue)
-	d.Update()
 }

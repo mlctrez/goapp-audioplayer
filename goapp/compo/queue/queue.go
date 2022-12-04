@@ -2,11 +2,13 @@ package queue
 
 import (
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
+	"github.com/mlctrez/goapp-audioplayer/goapp"
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/audio"
 	"github.com/mlctrez/goapp-audioplayer/model"
 )
 
 type Queue struct {
+	goapp.Logging
 	Index  int
 	Tracks []*model.Metadata
 }
@@ -36,38 +38,15 @@ func (q *Queue) HasNext() bool {
 
 func (q *Queue) SetCurrent(ctx app.Context) {
 	ctx.Page().SetTitle(q.CurrentTrack().Title)
-	audio.Action(ctx).Src(q.currentUrl())
-}
 
-// SetMediaSessionMetadata populates the mediaSession metadata - called from Queue.StartCurrent.
-//
-// This must be setup in order for previous/next track keys to work via setActionHandler.
-// The play/pause media key does not need this setup for it to work.
-func SetMediaSessionMetadata(current *model.Metadata) {
-	mediaSession := app.Window().Get("navigator").Get("mediaSession")
-
-	metadata := app.Window().Get("MediaMetadata").New()
-	metadata.Set("title", app.ValueOf(current.Title))
-	metadata.Set("artist", app.ValueOf(current.Artist))
-	metadata.Set("album", app.ValueOf(current.Album))
-
-	mediaSession.Set("metadata", metadata)
+	audio.Action(ctx).Src(q.CurrentTrack())
 }
 
 func (q *Queue) StartCurrent(ctx app.Context) {
-	current := q.CurrentTrack()
 
-	ctx.Page().SetTitle(current.Title)
+	ctx.Page().SetTitle(q.CurrentTrack().Title)
 
-	SetMediaSessionMetadata(current)
-
-	// https://web.dev/media-session/
-	mediaSession := app.Window().Get("navigator").Get("mediaSession")
-
-	mediaSession.Call("setActionHandler", "previoustrack", q.previousTrack(ctx))
-	mediaSession.Call("setActionHandler", "nexttrack", q.nextTrack(ctx))
-
-	audio.Action(ctx).Start(q.currentUrl())
+	audio.Action(ctx).Start(q.CurrentTrack())
 }
 
 func (q *Queue) previousTrack(ctx app.Context) app.Func {
@@ -109,8 +88,6 @@ func (q *Queue) Next(ctx app.Context) {
 		q.StartCurrent(ctx)
 	} else {
 		ctx.Page().SetTitle("mlctrez Music")
-		// enable play button when last song in queue ends
-		ctx.NewAction(audio.EventPause)
 	}
 }
 

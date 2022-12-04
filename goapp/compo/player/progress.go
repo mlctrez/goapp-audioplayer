@@ -8,8 +8,8 @@ import (
 
 type AudioProgress struct {
 	app.Compo
-	Seconds  uint64
-	progress float64
+	timeUpdate *audio.TimeUpdate
+	progress   float64
 }
 
 func (ap *AudioProgress) Render() app.UI {
@@ -21,11 +21,14 @@ func (ap *AudioProgress) Render() app.UI {
 
 func (ap *AudioProgress) seek(ctx app.Context, e app.Event) {
 
-	atPoint := e.Get("offsetX").Float()
-	width := ap.JSValue().Get("clientWidth").Float()
-	currentTime := float64(ap.Seconds) * atPoint / width
+	if ap.timeUpdate != nil {
 
-	audio.Action(ctx).CurrentTime(currentTime)
+		atPoint := e.Get("offsetX").Float()
+		width := ap.JSValue().Get("clientWidth").Float()
+		currentTime := ap.timeUpdate.Duration * atPoint / width
+
+		audio.Action(ctx).CurrentTime(currentTime)
+	}
 }
 
 func (ap *AudioProgress) OnMount(ctx app.Context) {
@@ -36,6 +39,6 @@ func (ap *AudioProgress) update(_ app.Context, action app.Action) {
 	if tu, ok := action.Value.(*audio.TimeUpdate); ok {
 		width := ap.JSValue().Get("clientWidth").Float()
 		ap.progress = width * tu.CurrentTime / tu.Duration
-		ap.Update()
+		ap.timeUpdate = tu
 	}
 }

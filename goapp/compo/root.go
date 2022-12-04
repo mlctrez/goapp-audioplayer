@@ -23,13 +23,15 @@ func (r *Root) OnMount(_ app.Context) {
 
 func (r *Root) Render() app.UI {
 	return app.Div().ID("compo-Root").Body(
+
 		&updater.Updater{},
 		&websocket.WebSocket{},
 		&audio.Audio{},
+
 		&nav.Navigation{},
-		&player.Player{},
 		&queue.Display{},
 		&album.List{},
 		&album.Album{},
+		&player.Player{},
 	)
 }

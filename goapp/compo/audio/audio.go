@@ -3,6 +3,7 @@ package audio
 import (
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 	"github.com/mlctrez/goapp-audioplayer/goapp"
+	"github.com/mlctrez/goapp-audioplayer/model"
 	"time"
 )
 
@@ -23,9 +24,9 @@ const audioPause = "audio.action.pause"
 const audioCurrentTime = "audio.action.currentTime"
 const audioVolume = "audio.action.volume"
 
-func (ac *Actions) Src(url string)            { ac.NewActionWithValue(audioSrc, url) }
+func (ac *Actions) Src(md *model.Metadata)    { ac.NewActionWithValue(audioSrc, md) }
 func (ac *Actions) Play()                     { ac.NewAction(audioPlay) }
-func (ac *Actions) Start(url string)          { ac.NewActionWithValue(audioStart, url) }
+func (ac *Actions) Start(md *model.Metadata)  { ac.NewActionWithValue(audioStart, md) }
 func (ac *Actions) Pause()                    { ac.NewAction(audioPause) }
 func (ac *Actions) CurrentTime(value float64) { ac.NewActionWithValue(audioCurrentTime, value) }
 func (ac *Actions) Volume(value float64)      { ac.NewActionWithValue(audioVolume, value) }
@@ -42,6 +43,7 @@ func (ac *Actions) handle(audio *Audio) {
 type Audio struct {
 	app.Compo
 	goapp.Logging
+	md *model.Metadata
 }
 
 func (a *Audio) Render() app.UI {
@@ -64,7 +66,9 @@ func (a *Audio) eventListener(ctx app.Context) app.Func {
 			return nil
 		}
 		eventType := args[0].Get("type").String()
-
+		if eventType != "timeupdate" {
+			a.Logf("audio event %s", eventType)
+		}
 		switch eventType {
 		case "canplay":
 			ctx.NewAction(EventCanPlay)
@@ -124,17 +128,32 @@ func (a *Audio) OnMount(ctx app.Context) {
 }
 
 func (a *Audio) src(ctx app.Context, action app.Action) {
-	if url, ok := action.Value.(string); ok {
-		a.Logf("src=%q", url)
-		if url == "" {
+	if md, ok := action.Value.(*model.Metadata); ok {
+		if md == nil {
 			a.pause(ctx, action)
+		} else {
+			a.md = md
+			a.JSValue().Set("src", app.ValueOf(md.FlacUrl()))
 		}
-		a.JSValue().Set("src", app.ValueOf(url))
 	}
 }
 
 func (a *Audio) play(_ app.Context, _ app.Action) {
-	a.JSValue().Call("play")
+	playPromise := a.JSValue().Call("play")
+	playPromise.Call("then", app.FuncOf(func(this app.Value, args []app.Value) any {
+		a.Log("setting metadata on play")
+
+		// https://github.com/w3c/mediasession/blob/main/explainer.md
+
+		mediaSession := app.Window().Get("navigator").Get("mediaSession")
+		metadata := app.Window().Get("MediaMetadata").New()
+		metadata.Set("title", app.ValueOf(a.md.Title))
+		metadata.Set("artist", app.ValueOf(a.md.Artist))
+		metadata.Set("album", app.ValueOf(a.md.Album))
+		// TODO: images?
+		mediaSession.Set("metadata", metadata)
+		return nil
+	}))
 }
 
 func (a *Audio) pause(_ app.Context, _ app.Action) {
@@ -149,6 +168,7 @@ func (a *Audio) currentTime(ctx app.Context, action app.Action) {
 }
 
 func (a *Audio) start(ctx app.Context, action app.Action) {
+	a.Log("")
 	a.src(ctx, action)
 	a.play(ctx, action)
 }
