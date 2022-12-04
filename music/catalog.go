@@ -86,9 +86,6 @@ func (c *Catalog) Search(clientId string, request *model.SearchRequest) (respons
 			if jsonErr := json.Unmarshal(v, md); err != nil {
 				return jsonErr
 			}
-			//if strings.Contains(strings.ToLower(md.Album), request.Search) {
-			//	matchedGroups[md.MusicbrainzReleaseGroupId] = md.Artist + "/" + md.Album
-			//}
 			if strings.Contains(strings.ToLower(md.Artist), request.Search) {
 				matchedGroups[md.MusicbrainzReleaseGroupId] = md.Artist + "/" + md.Album
 			}

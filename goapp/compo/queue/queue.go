@@ -39,9 +39,49 @@ func (q *Queue) SetCurrent(ctx app.Context) {
 	audio.Action(ctx).Src(q.currentUrl())
 }
 
+// SetMediaSessionMetadata populates the mediaSession metadata - called from Queue.StartCurrent.
+//
+// This must be setup in order for previous/next track keys to work via setActionHandler.
+// The play/pause media key does not need this setup for it to work.
+func SetMediaSessionMetadata(current *model.Metadata) {
+	mediaSession := app.Window().Get("navigator").Get("mediaSession")
+
+	metadata := app.Window().Get("MediaMetadata").New()
+	metadata.Set("title", app.ValueOf(current.Title))
+	metadata.Set("artist", app.ValueOf(current.Artist))
+	metadata.Set("album", app.ValueOf(current.Album))
+
+	mediaSession.Set("metadata", metadata)
+}
+
 func (q *Queue) StartCurrent(ctx app.Context) {
-	ctx.Page().SetTitle(q.CurrentTrack().Title)
+	current := q.CurrentTrack()
+
+	ctx.Page().SetTitle(current.Title)
+
+	SetMediaSessionMetadata(current)
+
+	// https://web.dev/media-session/
+	mediaSession := app.Window().Get("navigator").Get("mediaSession")
+
+	mediaSession.Call("setActionHandler", "previoustrack", q.previousTrack(ctx))
+	mediaSession.Call("setActionHandler", "nexttrack", q.nextTrack(ctx))
+
 	audio.Action(ctx).Start(q.currentUrl())
+}
+
+func (q *Queue) previousTrack(ctx app.Context) app.Func {
+	return app.FuncOf(func(this app.Value, args []app.Value) any {
+		q.Previous(ctx)
+		return nil
+	})
+}
+
+func (q *Queue) nextTrack(ctx app.Context) app.Func {
+	return app.FuncOf(func(this app.Value, args []app.Value) any {
+		q.Next(ctx)
+		return nil
+	})
 }
 
 func (q *Queue) currentUrl() string {

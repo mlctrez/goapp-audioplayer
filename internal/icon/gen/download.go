@@ -16,7 +16,9 @@ func main() {
 	icons := []string{
 		"skip_previous", "skip_next", "play_arrow", "pause",
 		"expand_more", "expand_less", "search", "close",
-		"playlist_add", "navigate_before", "navigate_next"}
+		"playlist_add", "navigate_before", "navigate_next",
+		"volume_up", "volume_down", "volume_mute",
+	}
 	sizes := []string{"48px"}
 
 	jf := jen.NewFilePath("github.com/mlctrez/goapp-audioplayer/internal/icon")

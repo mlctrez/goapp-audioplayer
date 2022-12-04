@@ -3,3 +3,4 @@
 temp/
 app.wasm
 bolt.db
+test.go

@@ -21,12 +21,14 @@ const audioPlay = "audio.action.play"
 const audioStart = "audio.action.start"
 const audioPause = "audio.action.pause"
 const audioCurrentTime = "audio.action.currentTime"
+const audioVolume = "audio.action.volume"
 
 func (ac *Actions) Src(url string)            { ac.NewActionWithValue(audioSrc, url) }
 func (ac *Actions) Play()                     { ac.NewAction(audioPlay) }
 func (ac *Actions) Start(url string)          { ac.NewActionWithValue(audioStart, url) }
 func (ac *Actions) Pause()                    { ac.NewAction(audioPause) }
 func (ac *Actions) CurrentTime(value float64) { ac.NewActionWithValue(audioCurrentTime, value) }
+func (ac *Actions) Volume(value float64)      { ac.NewActionWithValue(audioVolume, value) }
 
 func (ac *Actions) handle(audio *Audio) {
 	ac.Handle(audioSrc, audio.src)
@@ -34,6 +36,7 @@ func (ac *Actions) handle(audio *Audio) {
 	ac.Handle(audioStart, audio.start)
 	ac.Handle(audioPause, audio.pause)
 	ac.Handle(audioCurrentTime, audio.currentTime)
+	ac.Handle(audioVolume, audio.volume)
 }
 
 type Audio struct {
@@ -42,7 +45,7 @@ type Audio struct {
 }
 
 func (a *Audio) Render() app.UI {
-	return app.Audio().Src("")
+	return app.Audio().Src("").Preload("auto")
 }
 
 const EventCanPlay = "audio.event.canplay"
@@ -111,6 +114,11 @@ func (a *Audio) OnMount(ctx app.Context) {
 		}
 	}
 	handleEvents("canplay", "ended", "pause", "play", "seeked", "timeupdate")
+
+	// load last volume state
+	var volume float64
+	ctx.GetState("volume", &volume)
+	a.JSValue().Set("volume", app.ValueOf(volume))
 }
 
 func (a *Audio) src(ctx app.Context, action app.Action) {
@@ -141,4 +149,12 @@ func (a *Audio) currentTime(ctx app.Context, action app.Action) {
 func (a *Audio) start(ctx app.Context, action app.Action) {
 	a.src(ctx, action)
 	a.play(ctx, action)
+}
+
+func (a *Audio) volume(_ app.Context, action app.Action) {
+	if volume, ok := action.Value.(float64); ok {
+		if volume >= 0 || volume <= 1 {
+			a.JSValue().Set("volume", app.ValueOf(volume))
+		}
+	}
 }

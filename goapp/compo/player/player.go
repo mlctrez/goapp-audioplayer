@@ -30,6 +30,8 @@ func (p *Player) Render() app.UI {
 		controls = append(controls, &control.PlayPause{})
 		controls = append(controls, &control.Next{})
 		controls = append(controls, &CurrentTime{})
+		controls = append(controls, &Volume{})
+		controls = append(controls, &Mute{})
 
 		md := q.CurrentTrack()
 		imageSrc := fmt.Sprintf("/cover/%s", md.MusicbrainzReleaseGroupId)
@@ -52,6 +54,7 @@ func (p *Player) Render() app.UI {
 							app.Text(md.Artist+" • "+md.Album+date),
 						),
 					),
+
 					&Expand{},
 				),
 			),
