@@ -49,20 +49,6 @@ func (q *Queue) StartCurrent(ctx app.Context) {
 	audio.Action(ctx).Start(q.CurrentTrack())
 }
 
-func (q *Queue) previousTrack(ctx app.Context) app.Func {
-	return app.FuncOf(func(this app.Value, args []app.Value) any {
-		q.Previous(ctx)
-		return nil
-	})
-}
-
-func (q *Queue) nextTrack(ctx app.Context) app.Func {
-	return app.FuncOf(func(this app.Value, args []app.Value) any {
-		q.Next(ctx)
-		return nil
-	})
-}
-
 func (q *Queue) currentUrl() string {
 	return q.CurrentTrack().FlacUrl()
 }

@@ -119,12 +119,35 @@ func (a *Audio) OnMount(ctx app.Context) {
 	}
 	handleEvents("canplay", "ended", "pause", "play", "seeked", "timeupdate")
 
-	// load last volume state
+	// load last volume state into audio control volume
+	// -1 is here to skip when value is not set in state
 	var volume float64 = -1
 	ctx.GetState("volume", &volume)
 	if volume >= 0 {
 		a.JSValue().Set("volume", app.ValueOf(volume))
 	}
+
+	// This delay is required for the setActionHandler calls to work correctly.
+	// Possibly the audio element has not yet completely mounted ? who knows
+	ctx.After(3*time.Second, func(context app.Context) {
+		a.setupMediaHandlers(context)
+	})
+
+}
+
+func (a *Audio) setupMediaHandlers(ctx app.Context) {
+	mediaSession := app.Window().Get("navigator").Get("mediaSession")
+
+	mediaSession.Call("setActionHandler", "previoustrack", actionFunc(ctx, "mediaSession.previoustrack"))
+
+	mediaSession.Call("setActionHandler", "nexttrack", actionFunc(ctx, "mediaSession.nexttrack"))
+}
+
+func actionFunc(ctx app.Context, actionName string) app.Func {
+	return app.FuncOf(func(this app.Value, args []app.Value) any {
+		ctx.NewAction(actionName)
+		return nil
+	})
 }
 
 func (a *Audio) src(ctx app.Context, action app.Action) {
@@ -140,6 +163,7 @@ func (a *Audio) src(ctx app.Context, action app.Action) {
 
 func (a *Audio) play(_ app.Context, _ app.Action) {
 	playPromise := a.JSValue().Call("play")
+
 	playPromise.Call("then", app.FuncOf(func(this app.Value, args []app.Value) any {
 		a.Log("setting metadata on play")
 
@@ -150,8 +174,10 @@ func (a *Audio) play(_ app.Context, _ app.Action) {
 		metadata.Set("title", app.ValueOf(a.md.Title))
 		metadata.Set("artist", app.ValueOf(a.md.Artist))
 		metadata.Set("album", app.ValueOf(a.md.Album))
+
 		// TODO: images?
 		mediaSession.Set("metadata", metadata)
+
 		return nil
 	}))
 }

@@ -89,18 +89,8 @@ func (d *Display) OnMount(ctx app.Context) {
 	ctx.Handle("queue.add", d.add)
 	ctx.Handle("queue.clear", d.clear)
 
-	// after 5 seconds this seems to work correctly
-	ctx.After(5*time.Second, func(context app.Context) {
-		mediaSession := app.Window().Get("navigator").Get("mediaSession")
-		mediaSession.Call("setActionHandler", "nexttrack", app.FuncOf(func(this app.Value, args []app.Value) any {
-			d.queue.Next(context)
-			return nil
-		}))
-		mediaSession.Call("setActionHandler", "previoustrack", app.FuncOf(func(this app.Value, args []app.Value) any {
-			d.queue.Previous(context)
-			return nil
-		}))
-	})
+	ctx.Handle("mediaSession.previoustrack", d.previousTrack)
+	ctx.Handle("mediaSession.nexttrack", d.nextTrack)
 
 }
 
@@ -129,4 +119,12 @@ func (d *Display) clear(ctx app.Context, _ app.Action) {
 	ctx.SetState("displayMode", "album.List")
 	// clear the queue
 	d.queue.Clear(ctx)
+}
+
+func (d *Display) previousTrack(ctx app.Context, _ app.Action) {
+	d.queue.Previous(ctx)
+}
+
+func (d *Display) nextTrack(ctx app.Context, _ app.Action) {
+	d.queue.Next(ctx)
 }
