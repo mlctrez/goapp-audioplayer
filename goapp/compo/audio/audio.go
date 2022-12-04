@@ -116,9 +116,11 @@ func (a *Audio) OnMount(ctx app.Context) {
 	handleEvents("canplay", "ended", "pause", "play", "seeked", "timeupdate")
 
 	// load last volume state
-	var volume float64
+	var volume float64 = -1
 	ctx.GetState("volume", &volume)
-	a.JSValue().Set("volume", app.ValueOf(volume))
+	if volume >= 0 {
+		a.JSValue().Set("volume", app.ValueOf(volume))
+	}
 }
 
 func (a *Audio) src(ctx app.Context, action app.Action) {
