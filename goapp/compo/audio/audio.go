@@ -129,7 +129,7 @@ func (a *Audio) OnMount(ctx app.Context) {
 
 	// This delay is required for the setActionHandler calls to work correctly.
 	// Possibly the audio element has not yet completely mounted ? who knows
-	ctx.After(3*time.Second, func(context app.Context) {
+	ctx.After(5*time.Second, func(context app.Context) {
 		a.setupMediaHandlers(context)
 	})
 
