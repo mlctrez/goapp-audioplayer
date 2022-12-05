@@ -156,33 +156,37 @@ func (a *Audio) play(ctx app.Context, _ app.Action) {
 		// https://github.com/w3c/mediasession/blob/main/explainer.md
 
 		mediaSession := app.Window().Get("navigator").Get("mediaSession")
-		metadata := app.Window().Get("MediaMetadata").New()
-		metadata.Set("title", app.ValueOf(a.md.Title))
-		metadata.Set("artist", app.ValueOf(a.md.Artist))
-		metadata.Set("album", app.ValueOf(a.md.Album))
-		metadata.Set("artwork", mediaArtwork(a.md))
 
-		mediaSession.Set("metadata", metadata)
-		mediaSession.Set("playbackState", "playing")
+		if !mediaSession.IsUndefined() {
 
-		mediaSession.Call("setActionHandler", "previoustrack",
-			actionFunc(ctx, "mediaSession.previoustrack"))
+			metadata := app.Window().Get("MediaMetadata").New()
+			metadata.Set("title", app.ValueOf(a.md.Title))
+			metadata.Set("artist", app.ValueOf(a.md.Artist))
+			metadata.Set("album", app.ValueOf(a.md.Album))
+			metadata.Set("artwork", mediaArtwork(a.md))
 
-		mediaSession.Call("setActionHandler", "nexttrack",
-			actionFunc(ctx, "mediaSession.nexttrack"))
+			mediaSession.Set("metadata", metadata)
+			mediaSession.Set("playbackState", "playing")
 
-		mediaSession.Call("setActionHandler", "nexttrack",
-			actionFunc(ctx, "mediaSession.nexttrack"))
+			mediaSession.Call("setActionHandler", "previoustrack",
+				actionFunc(ctx, "mediaSession.previoustrack"))
 
+			mediaSession.Call("setActionHandler", "nexttrack",
+				actionFunc(ctx, "mediaSession.nexttrack"))
+
+			mediaSession.Call("setActionHandler", "nexttrack",
+				actionFunc(ctx, "mediaSession.nexttrack"))
+		}
 		return nil
 	}))
 }
 
 func (a *Audio) pause(_ app.Context, _ app.Action) {
 	a.JSValue().Call("pause")
-
 	mediaSession := app.Window().Get("navigator").Get("mediaSession")
-	mediaSession.Set("playbackState", "paused")
+	if !mediaSession.IsUndefined() {
+		mediaSession.Set("playbackState", "paused")
+	}
 }
 
 func (a *Audio) currentTime(ctx app.Context, action app.Action) {

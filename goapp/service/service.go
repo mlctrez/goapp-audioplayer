@@ -63,7 +63,7 @@ func (s *Service) Start(_ service.Service) (err error) {
 	// required for go-app to work correctly
 	engine.RedirectTrailingSlash = false
 
-	reduceNoise := os.Getenv("GOAPP_LOG_ALL_REQUESTS") != ""
+	reduceNoise := os.Getenv("GOAPP_LOG_ALL_REQUESTS") == ""
 
 	if dev {
 		if reduceNoise {
