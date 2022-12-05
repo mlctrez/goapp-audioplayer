@@ -127,20 +127,6 @@ func (a *Audio) OnMount(ctx app.Context) {
 		a.JSValue().Set("volume", app.ValueOf(volume))
 	}
 
-	// This delay is required for the setActionHandler calls to work correctly.
-	// Possibly the audio element has not yet completely mounted ? who knows
-	ctx.After(5*time.Second, func(context app.Context) {
-		a.setupMediaHandlers(context)
-	})
-
-}
-
-func (a *Audio) setupMediaHandlers(ctx app.Context) {
-	mediaSession := app.Window().Get("navigator").Get("mediaSession")
-
-	mediaSession.Call("setActionHandler", "previoustrack", actionFunc(ctx, "mediaSession.previoustrack"))
-
-	mediaSession.Call("setActionHandler", "nexttrack", actionFunc(ctx, "mediaSession.nexttrack"))
 }
 
 func actionFunc(ctx app.Context, actionName string) app.Func {
@@ -161,7 +147,7 @@ func (a *Audio) src(ctx app.Context, action app.Action) {
 	}
 }
 
-func (a *Audio) play(_ app.Context, _ app.Action) {
+func (a *Audio) play(ctx app.Context, _ app.Action) {
 	playPromise := a.JSValue().Call("play")
 
 	playPromise.Call("then", app.FuncOf(func(this app.Value, args []app.Value) any {
@@ -174,9 +160,19 @@ func (a *Audio) play(_ app.Context, _ app.Action) {
 		metadata.Set("title", app.ValueOf(a.md.Title))
 		metadata.Set("artist", app.ValueOf(a.md.Artist))
 		metadata.Set("album", app.ValueOf(a.md.Album))
+		metadata.Set("artwork", mediaArtwork(a.md))
 
-		// TODO: images?
 		mediaSession.Set("metadata", metadata)
+		mediaSession.Set("playbackState", "playing")
+
+		mediaSession.Call("setActionHandler", "previoustrack",
+			actionFunc(ctx, "mediaSession.previoustrack"))
+
+		mediaSession.Call("setActionHandler", "nexttrack",
+			actionFunc(ctx, "mediaSession.nexttrack"))
+
+		mediaSession.Call("setActionHandler", "nexttrack",
+			actionFunc(ctx, "mediaSession.nexttrack"))
 
 		return nil
 	}))
@@ -184,6 +180,9 @@ func (a *Audio) play(_ app.Context, _ app.Action) {
 
 func (a *Audio) pause(_ app.Context, _ app.Action) {
 	a.JSValue().Call("pause")
+
+	mediaSession := app.Window().Get("navigator").Get("mediaSession")
+	mediaSession.Set("playbackState", "paused")
 }
 
 func (a *Audio) currentTime(ctx app.Context, action app.Action) {

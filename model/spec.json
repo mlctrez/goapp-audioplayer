@@ -2,6 +2,11 @@
   "module": "github.com/mlctrez/goapp-audioplayer",
   "methods": [
     {
+      "name": "Ping",
+      "request": "PingRequest",
+      "response": "PingResponse"
+    },
+    {
       "name": "Search",
       "request": "SearchRequest",
       "response": "SearchResponse"
@@ -20,9 +25,32 @@
       "name": "PlayLists",
       "request": "PlayListsRequest",
       "response": "PlayListsResponse"
+    },
+    {
+      "name": "RandomTrack",
+      "request": "RandomTrackRequest",
+      "response": "RandomTrackResponse"
     }
   ],
   "types": [
+    {
+      "name": "PingRequest",
+      "fields": [
+        {
+          "name": "Query",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "PingResponse",
+      "fields": [
+        {
+          "name": "Query",
+          "type": "string"
+        }
+      ]
+    },
     {
       "name": "AlbumsRequest",
       "fields": [
@@ -284,6 +312,18 @@
           "name": "PlayLists",
           "type": "[]*PlayList",
           "json": "play_lists"
+        }
+      ]
+    },
+    {
+      "name": "RandomTrackRequest"
+    },
+    {
+      "name": "RandomTrackResponse",
+      "fields": [
+        {
+          "name": "Metadata",
+          "type": "*Metadata"
         }
       ]
     }

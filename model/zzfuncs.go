@@ -16,6 +16,17 @@ func FormatDuration(d time.Duration) string {
 	return fmt.Sprintf("%2d:%02d", int(d.Minutes()), int(d.Seconds())%60)
 }
 
+func (md *Metadata) CoverArtUrl(size int) string {
+	return CoverArtUrl(md.MusicbrainzReleaseGroupId, size)
+}
+
+func CoverArtUrl(releaseGroupId string, size int) string {
+	if size > 0 {
+		return fmt.Sprintf("/cover/%s?size=%d", releaseGroupId, size)
+	}
+	return "/cover/" + releaseGroupId
+}
+
 func (md *Metadata) FlacUrl() string {
 	return "/flac/" + md.ReleaseDiscTrackID()
 }

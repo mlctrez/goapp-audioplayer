@@ -97,7 +97,7 @@ func (c *Catalog) Search(clientId string, request *model.SearchRequest) (respons
 		response.Groups = append(response.Groups,
 			&model.ReleaseGroup{
 				ID:       groupId,
-				CoverArt: fmt.Sprintf("/cover/%s", groupId),
+				CoverArt: model.CoverArtUrl(groupId, 0),
 				SortKey:  searchKey,
 			},
 		)
@@ -380,4 +380,37 @@ func (c *Catalog) SetCoverArt(uu uuid.UUID, img image.Image) error {
 	value := &bolt.Value{K: bolt.Key(uu.String()), V: pngBytes}
 
 	return c.db.Put(ReleaseCoverArt, value)
+}
+
+func (c *Catalog) Ping(clientId string, request *model.PingRequest) (response *model.PingResponse, err error) {
+	return &model.PingResponse{Query: request.Query + " " + clientId}, nil
+}
+
+func (c *Catalog) RandomTrack(_ string, _ *model.RandomTrackRequest) (response *model.RandomTrackResponse, err error) {
+
+	var allTrackIds []string
+
+	err = c.db.View(func(tx *bbolt.Tx) error {
+		cursor := tx.Bucket(ReleaseDiscTrack.B()).Cursor()
+		for k, v := cursor.First(); k != nil; k, v = cursor.Next() {
+			_ = v
+			allTrackIds = append(allTrackIds, string(k))
+		}
+		return nil
+	})
+
+	s := rand.NewSource(time.Now().Unix())
+	r := rand.New(s) // initialize local pseudorandom generator
+
+	trackId := allTrackIds[r.Intn(len(allTrackIds))]
+	value := &bolt.Value{K: bolt.Key(trackId)}
+	if err = c.db.Get(ReleaseDiscTrack, value); err != nil {
+		return
+	}
+
+	response = &model.RandomTrackResponse{Metadata: &model.Metadata{}}
+	err = json.Unmarshal(value.V, response.Metadata)
+
+	return
+
 }

@@ -63,10 +63,15 @@ func (s *Service) Start(_ service.Service) (err error) {
 	// required for go-app to work correctly
 	engine.RedirectTrailingSlash = false
 
-	logConfig := gin.LoggerConfig{SkipPaths: []string{"/app-worker.js", "/web"}}
+	reduceNoise := os.Getenv("GOAPP_LOG_ALL_REQUESTS") != ""
 
 	if dev {
-		engine.Use(gin.LoggerWithConfig(logConfig), gin.Recovery(), brotli.Brotli(brotli.DefaultCompression))
+		if reduceNoise {
+			logConfig := gin.LoggerConfig{SkipPaths: []string{"/app-worker.js", "/web"}}
+			engine.Use(gin.LoggerWithConfig(logConfig), gin.Recovery(), brotli.Brotli(brotli.DefaultCompression))
+		} else {
+			engine.Use(gin.Logger(), gin.Recovery(), brotli.Brotli(brotli.DefaultCompression))
+		}
 	} else {
 		engine.Use(gin.Recovery(), brotli.Brotli(brotli.DefaultCompression))
 	}

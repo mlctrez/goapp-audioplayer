@@ -39,7 +39,7 @@ func (d *Display) Render() app.UI {
 		index := indexLoop
 		md := trackLoop
 		size := 40
-		image := app.Img().Width(size).Height(size).Src(fmt.Sprintf("/cover/%s", md.MusicbrainzReleaseGroupId))
+		image := app.Img().Width(size).Height(size).Src(md.CoverArtUrl(size))
 
 		duration := time.Second * time.Duration(md.Seconds)
 		totalDuration += duration

@@ -94,7 +94,7 @@ func (t *Album) Render() app.UI {
 
 	table := app.Table().Style("width", "600px").Body(rows...)
 
-	image := app.Img().Src(fmt.Sprintf("/cover/%s", t.album.ReleaseGroupID))
+	image := app.Img().Src(model.CoverArtUrl(t.album.ReleaseGroupID, 0))
 
 	return app.Div().Class("main-content").Body(
 		app.Div().Class("main-content-large-image").Body(image),

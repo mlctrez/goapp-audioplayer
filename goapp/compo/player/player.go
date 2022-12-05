@@ -1,7 +1,6 @@
 package player
 
 import (
-	"fmt"
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 	"github.com/mlctrez/goapp-audioplayer/goapp"
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/audio"
@@ -47,7 +46,7 @@ func (p *Player) Render() app.UI {
 		} else {
 			date = ""
 		}
-		imageSrc = fmt.Sprintf("/cover/%s", md.MusicbrainzReleaseGroupId)
+		imageSrc = md.CoverArtUrl(0)
 	} else {
 		md = &model.Metadata{
 			Title:  "Title",

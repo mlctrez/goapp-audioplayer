@@ -7,10 +7,12 @@ import (
 )
 
 type Api interface {
+	Ping(clientId string, request *PingRequest) (response *PingResponse, err error)
 	Search(clientId string, request *SearchRequest) (response *SearchResponse, err error)
 	Albums(clientId string, request *AlbumsRequest) (response *AlbumsResponse, err error)
 	Album(clientId string, request *AlbumRequest) (response *AlbumResponse, err error)
 	PlayLists(clientId string, request *PlayListsRequest) (response *PlayListsResponse, err error)
+	RandomTrack(clientId string, request *RandomTrackRequest) (response *RandomTrackResponse, err error)
 }
 
 type WebSocketMessage interface {
@@ -30,6 +32,16 @@ func InvokeApi(clientId string, data []byte, api Api) (result []byte, err error)
 	}
 
 	switch messageType {
+	case "PingRequest":
+		request := &PingRequest{}
+		if err = json.Unmarshal(messageJson, request); err != nil {
+			return nil, err
+		}
+		var response *PingResponse
+		if response, err = api.Ping(clientId, request); err != nil {
+			return nil, err
+		}
+		return response.WebSocketMessage()
 	case "SearchRequest":
 		request := &SearchRequest{}
 		if err = json.Unmarshal(messageJson, request); err != nil {
@@ -70,6 +82,16 @@ func InvokeApi(clientId string, data []byte, api Api) (result []byte, err error)
 			return nil, err
 		}
 		return response.WebSocketMessage()
+	case "RandomTrackRequest":
+		request := &RandomTrackRequest{}
+		if err = json.Unmarshal(messageJson, request); err != nil {
+			return nil, err
+		}
+		var response *RandomTrackResponse
+		if response, err = api.RandomTrack(clientId, request); err != nil {
+			return nil, err
+		}
+		return response.WebSocketMessage()
 	}
 
 	return nil, fmt.Errorf("message type %q not mapped", messageType)
@@ -88,6 +110,12 @@ func DecodeResponse(data []byte) (response WebSocketMessage, err error) {
 	}
 
 	switch messageType {
+	case "PingResponse":
+		response = &PingResponse{}
+		if err = json.Unmarshal(messageJson, response); err != nil {
+			return nil, err
+		}
+		return
 	case "SearchResponse":
 		response = &SearchResponse{}
 		if err = json.Unmarshal(messageJson, response); err != nil {
@@ -108,6 +136,12 @@ func DecodeResponse(data []byte) (response WebSocketMessage, err error) {
 		return
 	case "PlayListsResponse":
 		response = &PlayListsResponse{}
+		if err = json.Unmarshal(messageJson, response); err != nil {
+			return nil, err
+		}
+		return
+	case "RandomTrackResponse":
+		response = &RandomTrackResponse{}
 		if err = json.Unmarshal(messageJson, response); err != nil {
 			return nil, err
 		}
