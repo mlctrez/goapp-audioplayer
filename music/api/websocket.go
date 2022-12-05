@@ -16,15 +16,23 @@ func (a *Api) webSocketHandler(ginCtx *gin.Context) {
 	var err error
 	var conn *websocket.Conn
 
-	if conn, err = websocket.Accept(ginCtx.Writer, ginCtx.Request, nil); err != nil {
+	clientId := ginCtx.Param("clientId")
+	fmt.Println("websocket connect", clientId, ginCtx.Request.RemoteAddr)
+
+	var options *websocket.AcceptOptions
+	// https://github.com/gorilla/websocket/issues/731
+	// Compression in certain Safari browsers is broken, turn it off
+	if strings.Contains(ginCtx.Request.UserAgent(), "Safari") {
+		options = &websocket.AcceptOptions{CompressionMode: websocket.CompressionDisabled}
+	}
+
+	if conn, err = websocket.Accept(ginCtx.Writer, ginCtx.Request, options); err != nil {
 		_ = ginCtx.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
 	ctx, cancelFunc := context.WithCancel(context.TODO())
 	defer cancelFunc()
-
-	clientId := ginCtx.Param("clientId")
 
 	// make a response channel
 	responseChannel := make(chan []byte, 10)
@@ -69,6 +77,8 @@ func (a *Api) webSocketHandler(ginCtx *gin.Context) {
 			selectRunning = false
 		}
 	}
+
+	fmt.Println("websocket disconnect", clientId, ginCtx.Request.RemoteAddr)
 
 }
 
