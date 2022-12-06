@@ -1,6 +1,7 @@
 package audio
 
 import (
+	"encoding/json"
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 	"github.com/mlctrez/goapp-audioplayer/goapp"
 	"github.com/mlctrez/goapp-audioplayer/model"
@@ -179,6 +180,25 @@ func (a *Audio) play(ctx app.Context, _ app.Action) {
 		}
 		return nil
 	}))
+}
+
+func mediaArtwork(md *model.Metadata) app.Value {
+	type MediaArtwork struct {
+		Sizes string `json:"sizes"`
+		Src   string `json:"src"`
+		Type  string `json:"type"`
+	}
+
+	// these are the sizes that music.youtube.com uses, don't know on
+	mediaSizes := map[string]int{"60x60": 60, "120x120": 120, "226x226": 226, "544x544": 544}
+
+	var a []MediaArtwork
+	for sizes, size := range mediaSizes {
+		a = append(a, MediaArtwork{Sizes: sizes, Src: md.CoverArtUrl(size), Type: "image/png"})
+	}
+
+	marshal, _ := json.Marshal(a)
+	return app.Window().Get("JSON").Call("parse", string(marshal))
 }
 
 func (a *Audio) pause(_ app.Context, _ app.Action) {
