@@ -17,7 +17,7 @@ func (a *Api) webSocketHandler(ginCtx *gin.Context) {
 	var conn *websocket.Conn
 
 	clientId := ginCtx.Param("clientId")
-	fmt.Println("websocket connect", clientId, ginCtx.Request.RemoteAddr)
+	//fmt.Println("websocket connect", clientId, ginCtx.Request.RemoteAddr)
 
 	var options *websocket.AcceptOptions
 	// https://github.com/gorilla/websocket/issues/731
@@ -78,7 +78,7 @@ func (a *Api) webSocketHandler(ginCtx *gin.Context) {
 		}
 	}
 
-	fmt.Println("websocket disconnect", clientId, ginCtx.Request.RemoteAddr)
+	//fmt.Println("websocket disconnect", clientId, ginCtx.Request.RemoteAddr)
 
 }
 

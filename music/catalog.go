@@ -31,7 +31,10 @@ type Catalog struct {
 	caa *caa.CAAClient
 }
 
-// ReleaseDiscTrack bucket stores Metadata keyed by releaseGroupId, disc number, and track number.
+// ReleaseDiscTrack bucket stores model.Metadata keyed by releaseGroupId,
+// disc number (0 pad 2), and track number (0 pad 3).
+//
+//	ex. 81d27c75-9680-3b3f-acc3-a6e52b864c84_01_001
 const ReleaseDiscTrack = bolt.Key("release_disc_track")
 
 // ReleaseCoverArt bucket stores the cover art image keyed by release group id or and empty byte slice if none found.

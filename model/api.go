@@ -97,7 +97,7 @@ func InvokeApi(clientId string, data []byte, api Api) (result []byte, err error)
 	return nil, fmt.Errorf("message type %q not mapped", messageType)
 }
 
-func DecodeResponse(data []byte) (response WebSocketMessage, err error) {
+func DecodeMessage(data []byte) (result WebSocketMessage, err error) {
 	var messageType string
 	var messageJson []byte
 
@@ -110,42 +110,35 @@ func DecodeResponse(data []byte) (response WebSocketMessage, err error) {
 	}
 
 	switch messageType {
+	case "PingRequest":
+		result = &PingRequest{}
 	case "PingResponse":
-		response = &PingResponse{}
-		if err = json.Unmarshal(messageJson, response); err != nil {
-			return nil, err
-		}
-		return
+		result = &PingResponse{}
+	case "SearchRequest":
+		result = &SearchRequest{}
 	case "SearchResponse":
-		response = &SearchResponse{}
-		if err = json.Unmarshal(messageJson, response); err != nil {
-			return nil, err
-		}
-		return
+		result = &SearchResponse{}
+	case "AlbumsRequest":
+		result = &AlbumsRequest{}
 	case "AlbumsResponse":
-		response = &AlbumsResponse{}
-		if err = json.Unmarshal(messageJson, response); err != nil {
-			return nil, err
-		}
-		return
+		result = &AlbumsResponse{}
+	case "AlbumRequest":
+		result = &AlbumRequest{}
 	case "AlbumResponse":
-		response = &AlbumResponse{}
-		if err = json.Unmarshal(messageJson, response); err != nil {
-			return nil, err
-		}
-		return
+		result = &AlbumResponse{}
+	case "PlayListsRequest":
+		result = &PlayListsRequest{}
 	case "PlayListsResponse":
-		response = &PlayListsResponse{}
-		if err = json.Unmarshal(messageJson, response); err != nil {
-			return nil, err
-		}
-		return
+		result = &PlayListsResponse{}
+	case "RandomTrackRequest":
+		result = &RandomTrackRequest{}
 	case "RandomTrackResponse":
-		response = &RandomTrackResponse{}
-		if err = json.Unmarshal(messageJson, response); err != nil {
-			return nil, err
-		}
-		return
+		result = &RandomTrackResponse{}
+	default:
+		return nil, fmt.Errorf("message type %q not mapped", messageType)
 	}
-	return nil, fmt.Errorf("unknown message type %q", messageType)
+	if err = json.Unmarshal(messageJson, result); err != nil {
+		return nil, err
+	}
+	return
 }

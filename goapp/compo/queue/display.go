@@ -46,9 +46,9 @@ func (d *Display) Render() app.UI {
 
 		tr := app.Tr().Body(
 			app.Td().Body(image),
-			app.Td().Text(md.Album),
+			app.Td().Class("queue-table-album").Text(md.Album),
 			app.Td().Text(md.Title),
-			app.Td().Text(md.Artist),
+			app.Td().Class("queue-table-artist").Text(md.Artist),
 			app.Td().Style("text-align", "right").Text(formatDuration(duration)),
 		)
 
@@ -65,14 +65,14 @@ func (d *Display) Render() app.UI {
 	queueClear := func(ctx app.Context, e app.Event) { ctx.NewAction("queue.clear") }
 	tr := app.Tr().Body(
 		app.Td().Body(app.Div().Class("queue-clear").Body(app.Raw(icon.Close48())).OnClick(queueClear)),
+		app.Td().Class("queue-table-album").Text(""),
 		app.Td().Body(app.Div().Class("queue-clear").Body(app.Text("Clear Queue")).OnClick(queueClear)),
-		app.Td().ColSpan(2).Text(""),
+		app.Td().Class("queue-table-artist").Text(""),
 		app.Td().Style("text-align", "right").Text(formatDuration(totalDuration)),
 	)
 	rows = append(rows, tr)
 
-	tableStyle := map[string]string{"width": "60vw", "border-spacing": "0px"}
-	table := app.Table().Styles(tableStyle).Class("queue-table").Body(rows...)
+	table := app.Table().Class("queue-table").Class("queue-table").Body(rows...)
 
 	return app.Div().Class("main-content").Body(table)
 

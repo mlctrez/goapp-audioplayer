@@ -2,8 +2,9 @@ package album
 
 import (
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
-	"github.com/mlctrez/goapp-audioplayer/goapp/compo/websocket"
+	"github.com/mlctrez/goapp-audioplayer/goapp/compo/actions"
 	"github.com/mlctrez/goapp-audioplayer/model"
+	"github.com/mlctrez/goapp-natsws/natsws"
 )
 
 type Card struct {
@@ -11,6 +12,13 @@ type Card struct {
 	ReleaseGroupID string
 	Album          string
 	Artist         string
+	natswsConn     *natsws.Connection
+	albumResponse  *model.AlbumResponse
+}
+
+func (c *Card) OnMount(ctx app.Context) {
+	c.natswsConn = &natsws.Connection{}
+	natsws.Observe(ctx, c.natswsConn)
 }
 
 func (c *Card) Render() app.UI {
@@ -23,5 +31,5 @@ func (c *Card) Render() app.UI {
 }
 
 func (c *Card) click(ctx app.Context, _ app.Event) {
-	websocket.Action(ctx).Write(&model.AlbumRequest{ReleaseGroupID: c.ReleaseGroupID})
+	actions.RequestAlbum(ctx, c.natswsConn, &model.AlbumRequest{ReleaseGroupID: c.ReleaseGroupID})
 }

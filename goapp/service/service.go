@@ -13,9 +13,13 @@ import (
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 	"github.com/mlctrez/goapp-audioplayer/goapp"
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo"
+	"github.com/mlctrez/goapp-audioplayer/model"
 	"github.com/mlctrez/goapp-audioplayer/music"
 	"github.com/mlctrez/goapp-audioplayer/music/api"
+	"github.com/mlctrez/goapp-audioplayer/music/natsapi"
 	"github.com/mlctrez/servicego"
+	"github.com/nats-io/nats-server/v2/server"
+	"github.com/nats-io/nats.go"
 	"io/fs"
 	"net"
 	"net/http"
@@ -36,11 +40,16 @@ type Service struct {
 	servicego.Defaults
 	serverShutdown func(ctx context.Context) error
 	db             *music.Catalog
+	nats           *server.Server
+	serverContext  context.Context
+	serverCancel   context.CancelFunc
 }
 
 func (s *Service) Start(_ service.Service) (err error) {
 
 	fmt.Println("starting version", goapp.RuntimeVersion())
+
+	s.serverContext, s.serverCancel = context.WithCancel(context.Background())
 
 	if s.db, err = music.OpenCatalog("bolt.db"); err != nil {
 		return
@@ -80,6 +89,10 @@ func (s *Service) Start(_ service.Service) (err error) {
 		return
 	}
 
+	if err = s.startEmbeddedNats(); err != nil {
+		return
+	}
+
 	// other api endpoints can go here
 	api.New(s.db).Register(engine)
 
@@ -105,6 +118,39 @@ func (s *Service) Start(_ service.Service) (err error) {
 	}()
 
 	return nil
+}
+
+func (s *Service) startEmbeddedNats() (err error) {
+	options := &server.Options{
+		ServerName: "audioPlayer",
+		NoSigs:     true,
+		Port:       9940,
+		Websocket: server.WebsocketOpts{
+			Host:  "127.0.0.1",
+			Port:  9950,
+			NoTLS: true,
+		},
+	}
+
+	if s.nats, err = server.NewServer(options); err != nil {
+		return
+	}
+	go s.nats.Start()
+
+	s.nats.Reload()
+
+	if !s.nats.ReadyForConnections(time.Second * 4) {
+		return fmt.Errorf("embedded nats did not start correctly")
+	}
+
+	var natsConn *nats.Conn
+	if natsConn, err = nats.Connect("", nats.InProcessServer(s.nats)); err != nil {
+		return
+	}
+
+	backend := model.NewNatsBackend(s.serverContext, natsConn, &natsapi.Api{Catalog: s.db})
+
+	return backend.Start()
 }
 
 func setupGinStaticHandlers(engine *gin.Engine) (err error) {
@@ -145,6 +191,14 @@ func (s *Service) Stop(_ service.Service) (err error) {
 
 	if s.db != nil {
 		s.db.CloseCatalog()
+	}
+
+	if s.serverCancel != nil {
+		s.serverCancel()
+	}
+
+	if s.nats != nil {
+		s.nats.Shutdown()
 	}
 
 	if s.serverShutdown != nil {

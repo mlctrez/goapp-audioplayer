@@ -83,7 +83,7 @@ func resizeImage(imageBytes []byte, size int) (result []byte, err error) {
 	if img, err = png.Decode(bytes.NewReader(imageBytes)); err != nil {
 		return
 	}
-	resize := imaging.Resize(img, int(size), 0, imaging.Lanczos)
+	resize := imaging.Resize(img, size, 0, imaging.Lanczos)
 	buff := &bytes.Buffer{}
 	if err = png.Encode(buff, resize); err != nil {
 		return

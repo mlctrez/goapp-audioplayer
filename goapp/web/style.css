@@ -144,6 +144,9 @@ body {
     fill: cadetblue;
 }
 
+.main-content-album-table {
+    width: 600px;
+}
 
 .audio-control {
     cursor: not-allowed;
@@ -160,6 +163,15 @@ body {
 .audio-control-enabled svg {
     fill: cadetblue;
 }
+
+.audio-control-mute {
+    cursor: pointer;
+}
+
+.audio-control-mute svg {
+    fill: cadetblue;
+}
+
 
 .queue {
     display: flex;
@@ -208,6 +220,11 @@ body {
     flex-direction: row;
 }
 
+.queue-table {
+    width: 60vw;
+    border-spacing: 2px;
+}
+
 .queue-playing {
     display: flex;
     flex-direction: row;
@@ -245,6 +262,20 @@ body {
     position: relative;
     left: -9px;
     fill: cadetblue;
+}
+
+.album-title-top-section-left {
+    display: flex;
+    flex-direction: column;
+}
+
+.album-title-top-section-right {
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    position: relative;
+    top: 10px;
+    left: -10px;
 }
 
 .album-track-row {
@@ -293,4 +324,57 @@ body {
     border: 0;
     cursor: pointer;
     background: cadetblue;
+}
+
+@media (max-width: 800px) {
+    .navigation-left {
+        display: none;
+    }
+
+    .navigation-right {
+        display: none;
+    }
+
+    .navigation {
+        justify-content: space-evenly;
+    }
+
+    .main-content {
+        padding: 80px 2vw;
+    }
+
+    .main-content-large-image img {
+        width: 90vw;
+        height: 90vw;
+    }
+
+    .main-content-album-table {
+        width: 98vw;
+    }
+
+    .queue-playing {
+        display: none;
+    }
+
+    .volume-slider-container {
+        display: none;
+    }
+
+    .audio-control-mute {
+        display: none;
+    }
+
+    .queue-table {
+        width: 99vw;
+        border-spacing: 0;
+    }
+
+    .queue-table-album {
+        display: none;
+    }
+
+    .queue-table-artist {
+        display: none;
+    }
+
 }

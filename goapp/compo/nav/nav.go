@@ -4,20 +4,30 @@ import (
 	"fmt"
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 	"github.com/mlctrez/goapp-audioplayer/goapp"
-	"github.com/mlctrez/goapp-audioplayer/goapp/compo/websocket"
+	"github.com/mlctrez/goapp-audioplayer/goapp/compo/actions"
 	"github.com/mlctrez/goapp-audioplayer/internal/icon"
 	"github.com/mlctrez/goapp-audioplayer/model"
+	"github.com/mlctrez/goapp-natsws/natsws"
 	"strings"
 )
 
+var _ app.Mounter = (*Navigation)(nil)
+
 type Navigation struct {
 	app.Compo
+	natswsConn *natsws.Connection
+	width      int
+}
+
+func (n *Navigation) OnMount(ctx app.Context) {
+	n.natswsConn = &natsws.Connection{}
+	natsws.Observe(ctx, n.natswsConn)
 }
 
 func (n *Navigation) Render() app.UI {
 	return app.Div().Class("navigation").Body(
 		app.Div().Class("navigation-left").Body(
-			app.Div().Body(app.Img().Src("/web/logo-192.png")),
+			app.Div().Title("mlctrez Music").Body(app.Img().Src("/web/logo-192.png")),
 			app.Div().Body(app.Text("mlctrez Music")),
 		).OnClick(n.navigationLeft),
 		app.Div().Class("navigation-center").Body(
@@ -30,7 +40,7 @@ func (n *Navigation) Render() app.UI {
 }
 
 func (n *Navigation) requestAlbums(ctx app.Context, _ app.Event) {
-	websocket.Action(ctx).Write(&model.AlbumsRequest{})
+	actions.RequestAlbums(ctx, n.natswsConn, &model.AlbumsRequest{})
 }
 
 func (n *Navigation) version() app.UI {

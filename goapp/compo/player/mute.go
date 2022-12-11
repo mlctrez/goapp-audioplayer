@@ -1,7 +1,7 @@
 package player
 
 import (
-	app "github.com/maxence-charriere/go-app/v9/pkg/app"
+	"github.com/maxence-charriere/go-app/v9/pkg/app"
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/audio"
 	"github.com/mlctrez/goapp-audioplayer/internal/icon"
 )
@@ -13,7 +13,7 @@ type Mute struct {
 }
 
 func (m *Mute) Render() app.UI {
-	control := app.Div().Class("audio-control-enabled")
+	control := app.Div().Class("audio-control-mute")
 	if m.volume == 0 {
 		control.Body(app.Raw(icon.VolumeMute48())).Style("position", "relative").Style("left", "-7px")
 	} else if m.volume < .5 {
@@ -29,7 +29,7 @@ func (m *Mute) OnMount(ctx app.Context) {
 	ctx.ObserveState("volume").Value(&m.volume)
 }
 
-func (m *Mute) clicked(ctx app.Context, e app.Event) {
+func (m *Mute) clicked(ctx app.Context, _ app.Event) {
 	if m.volume == 0 {
 		// restore previous volume value
 		ctx.SetState("volume", m.previousVolume)

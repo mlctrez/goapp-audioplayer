@@ -9,7 +9,7 @@ import (
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/player"
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/queue"
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/updater"
-	"github.com/mlctrez/goapp-audioplayer/goapp/compo/websocket"
+	"github.com/mlctrez/goapp-natsws/natsws"
 )
 
 type Root struct {
@@ -17,15 +17,14 @@ type Root struct {
 	goapp.Logging
 }
 
-func (r *Root) OnMount(_ app.Context) {
+func (r *Root) OnMount(ctx app.Context) {
 	r.Logf("version %s", goapp.RuntimeVersion())
 }
 
 func (r *Root) Render() app.UI {
 	return app.Div().ID("compo-Root").Body(
-
 		&updater.Updater{},
-		&websocket.WebSocket{},
+		&natsws.Nats{},
 		&audio.Audio{},
 
 		&nav.Navigation{},

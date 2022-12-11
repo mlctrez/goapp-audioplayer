@@ -142,7 +142,7 @@ func (w *WebSocket) readMessage(ctx app.Context) {
 		}
 		if wsType == websocket.MessageBinary {
 			var msg model.WebSocketMessage
-			if msg, err = model.DecodeResponse(data); err != nil {
+			if msg, err = model.DecodeMessage(data); err != nil {
 				app.Logf("model.DecodeResponse error: %s", err)
 				return
 			}

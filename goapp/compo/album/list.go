@@ -1,11 +1,13 @@
 package album
 
 import (
+	"fmt"
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 	"github.com/mlctrez/goapp-audioplayer/goapp"
+	"github.com/mlctrez/goapp-audioplayer/goapp/compo/actions"
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/nodisplay"
-	"github.com/mlctrez/goapp-audioplayer/goapp/compo/websocket"
 	"github.com/mlctrez/goapp-audioplayer/model"
+	"github.com/mlctrez/goapp-natsws/natsws"
 )
 
 type List struct {
@@ -15,6 +17,7 @@ type List struct {
 	albumCards      []*model.AlbumCard
 	listPosition    int
 	albumsScrollTop int
+	natswsConn      *natsws.Connection
 }
 
 func (l *List) Render() app.UI {
@@ -44,21 +47,21 @@ func (l *List) Render() app.UI {
 func (l *List) OnMount(ctx app.Context) {
 	l.Log("")
 	ctx.ObserveState("displayMode").Value(&l.displayMode)
-	websocket.Action(ctx).HandleAction(&model.AlbumsResponse{}, l)
+
+	ctx.Handle("model.AlbumsResponse", l.onAlbumsResponse)
 	ctx.Handle("navigation.previous", l.previous)
 	ctx.Handle("navigation.next", l.next)
-	ctx.Defer(l.requestAlbums)
 
+	l.natswsConn = &natsws.Connection{}
+	natsws.Observe(ctx, l.natswsConn).OnChange(func() {
+		fmt.Println("List.OnMount natsws.Connection")
+		actions.RequestAlbums(ctx, l.natswsConn, &model.AlbumsRequest{})
+	})
 }
 
-func (l *List) requestAlbums(ctx app.Context) {
+func (l *List) onAlbumsResponse(ctx app.Context, action app.Action) {
 	l.Log("")
-	websocket.Action(ctx).Write(&model.AlbumsRequest{})
-}
-
-func (l *List) OnWebsocketMessage(ctx app.Context, message model.WebSocketMessage) {
-	l.Log("")
-	l.albumCards = message.(*model.AlbumsResponse).Results
+	l.albumCards = action.Value.(*model.AlbumsResponse).Results
 	l.listPosition = 0
 	ctx.SetState("navigation.previous", "")
 	ctx.SetState("navigation.next", "on")
