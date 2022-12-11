@@ -121,13 +121,21 @@ func (s *Service) Start(_ service.Service) (err error) {
 }
 
 func (s *Service) startEmbeddedNats() (err error) {
+
+	var natsHost string
+	var natsPort int
+	if natsHost, natsPort, err = music.NatsAddress(); err != nil {
+		return
+	}
+
 	options := &server.Options{
 		ServerName: "audioPlayer",
+		Host:       natsHost,
+		Port:       natsPort,
 		NoSigs:     true,
-		Port:       9940,
 		Websocket: server.WebsocketOpts{
-			Host:  "127.0.0.1",
-			Port:  9950,
+			Host:  natsHost,
+			Port:  natsPort + music.NatsWebsocketPortOffset,
 			NoTLS: true,
 		},
 	}
@@ -135,13 +143,18 @@ func (s *Service) startEmbeddedNats() (err error) {
 	if s.nats, err = server.NewServer(options); err != nil {
 		return
 	}
-	go s.nats.Start()
 
-	s.nats.Reload()
+	// to see nats startup failures, uncomment the next two lines
+	// logger := logger.NewTestLogger("nats", false)
+	// s.nats.SetLogger(logger, false, false)
+	go s.nats.Start()
 
 	if !s.nats.ReadyForConnections(time.Second * 4) {
 		return fmt.Errorf("embedded nats did not start correctly")
 	}
+
+	// remove logger after successful startup
+	s.nats.SetLogger(nil, false, false)
 
 	var natsConn *nats.Conn
 	if natsConn, err = nats.Connect("", nats.InProcessServer(s.nats)); err != nil {

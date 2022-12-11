@@ -137,7 +137,6 @@ body {
     display: flex;
     flex-direction: column;
     padding-left: 20px;
-
 }
 
 .main-content-album-tracks svg {
@@ -280,6 +279,10 @@ body {
 
 .album-track-row {
     cursor: pointer;
+}
+
+.album-track-duration {
+    justify-content: right;
 }
 
 .volume-slider-container {

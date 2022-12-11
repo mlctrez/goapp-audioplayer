@@ -25,9 +25,9 @@ func (a *Api) Register(engine *gin.Engine) {
 	// flac file keyed by releaseGroupId_disc_track
 	engine.GET("/flac/:key", a.releaseGroupTrack)
 
-	// web socket endpoint for websocket api calls
+	// web socket endpoint for websocket api calls, not used - kept for reference
 	engine.GET("/ws/:clientId", a.webSocketHandler)
 
-	engine.GET("/natsws/:clientId", gin.WrapH(proxy.New("ws://127.0.0.1:9950")))
+	engine.GET("/natsws/:clientId", gin.WrapH(proxy.New(music.NatsWebsocketURL())))
 
 }
