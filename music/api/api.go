@@ -3,7 +3,7 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/mlctrez/goapp-audioplayer/music"
-	"github.com/mlctrez/goapp-natsws/proxy"
+	"github.com/mlctrez/goapp-natsws"
 )
 
 type Api struct {
@@ -28,6 +28,8 @@ func (a *Api) Register(engine *gin.Engine) {
 	// web socket endpoint for websocket api calls, not used - kept for reference
 	engine.GET("/ws/:clientId", a.webSocketHandler)
 
-	engine.GET("/natsws/:clientId", gin.WrapH(proxy.New(music.NatsWebsocketURL())))
+	proxy := &natsws.Proxy{Manager: natsws.StaticManager(false, music.NatsWebsocketURL())}
+
+	engine.GET("/natsws/:clientId", gin.WrapH(proxy))
 
 }

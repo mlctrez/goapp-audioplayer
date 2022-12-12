@@ -6,7 +6,7 @@ import (
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/nodisplay"
 	"github.com/mlctrez/goapp-audioplayer/internal/icon"
 	"github.com/mlctrez/goapp-audioplayer/model"
-	"github.com/mlctrez/goapp-natsws/natsws"
+	"github.com/mlctrez/goapp-natsws"
 	"strings"
 	"time"
 )

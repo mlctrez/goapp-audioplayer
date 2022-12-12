@@ -7,7 +7,7 @@ import (
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/actions"
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/nodisplay"
 	"github.com/mlctrez/goapp-audioplayer/model"
-	"github.com/mlctrez/goapp-natsws/natsws"
+	"github.com/mlctrez/goapp-natsws"
 )
 
 type List struct {

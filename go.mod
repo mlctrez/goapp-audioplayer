@@ -2,7 +2,7 @@ module github.com/mlctrez/goapp-audioplayer
 
 go 1.19
 
-replace github.com/maxence-charriere/go-app/v9 => /home/mattman/golang/go-app
+replace github.com/maxence-charriere/go-app/v9 => ../go-app
 
 require (
 	github.com/anargu/gin-brotli v0.0.0-20220116052358-12bf532d5267
@@ -16,7 +16,7 @@ require (
 	github.com/mewkiz/flac v1.0.7
 	github.com/mineo/gocaa v0.0.0-20181004170524-8dc0fb0f6922
 	github.com/mlctrez/bolt v1.0.0
-	github.com/mlctrez/goapp-natsws v0.9.3
+	github.com/mlctrez/goapp-natsws v1.0.2
 	github.com/mlctrez/servicego v1.4.6
 	github.com/nats-io/nats-server/v2 v2.9.8
 	github.com/nats-io/nats.go v1.21.0

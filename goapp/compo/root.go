@@ -9,7 +9,7 @@ import (
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/player"
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/queue"
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/updater"
-	"github.com/mlctrez/goapp-natsws/natsws"
+	"github.com/mlctrez/goapp-natsws"
 )
 
 type Root struct {
@@ -24,7 +24,7 @@ func (r *Root) OnMount(ctx app.Context) {
 func (r *Root) Render() app.UI {
 	return app.Div().ID("compo-Root").Body(
 		&updater.Updater{},
-		&natsws.Nats{},
+		&natsws.Component{},
 		&audio.Audio{},
 
 		&nav.Navigation{},

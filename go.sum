@@ -91,8 +91,8 @@ github.com/minio/highwayhash v1.0.2 h1:Aak5U0nElisjDCfPSG79Tgzkn2gl66NxOMspRrKnA
 github.com/minio/highwayhash v1.0.2/go.mod h1:BQskDq+xkJ12lmlUUi7U0M5Swg3EWR+dLTk+kldvVxY=
 github.com/mlctrez/bolt v1.0.0 h1:qCICL7c4KI9tP8EfRqo+DWz50DLm1CVnS4yVbSa3p9M=
 github.com/mlctrez/bolt v1.0.0/go.mod h1:pBI8ST4+nZoVc1mzDAbBrw8L4Rdod52wwRRnwPekzlE=
-github.com/mlctrez/goapp-natsws v0.9.3 h1:tgmN70FvBVOivYcOpJKcSsYA0E78fOUQMPJpCJPArAo=
-github.com/mlctrez/goapp-natsws v0.9.3/go.mod h1:Etc5uTsL3Bzx8AomZgBDq2xsX5cJLdiHHeXxOEjXu2I=
+github.com/mlctrez/goapp-natsws v1.0.2 h1:UKwnVwNdsLzM2VZSRgSEBuSLGTjoBTDshNdReWI5kYM=
+github.com/mlctrez/goapp-natsws v1.0.2/go.mod h1:QAfMBH/a8eowGd9tKcm7dexa8/W9WRUTH5c8FANmf84=
 github.com/mlctrez/servicego v1.4.6 h1:5jsmcbq86MT2FxT+JoQ2/ujM3jPchpdCyI3THVKs8SU=
 github.com/mlctrez/servicego v1.4.6/go.mod h1:2VAm0+n3ovQC4ToGh4Vu231cVIWOpupjcvkEaQltFAM=
 github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 h1:ZqeYNhU3OHLH3mGKHDcjJRFFRrJa6eAM5H+CtDdOsPc=
