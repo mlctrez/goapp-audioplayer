@@ -256,6 +256,14 @@ func BuildHandler() (handler *app.Handler, err error) {
 	if err = json.NewDecoder(file).Decode(handler); err != nil {
 		return
 	}
+
+	appWorkerJs := app.DefaultAppWorkerJS
+	for k, v := range appWorkerJsReplace {
+		appWorkerJs = strings.Replace(appWorkerJs, k, v, 1)
+	}
+
+	handler.ServiceWorkerTemplate = appWorkerJs
+
 	handler.Version = goapp.RuntimeVersion()
 	handler.AutoUpdateInterval = goapp.UpdateInterval()
 	if goapp.IsDevelopment() {
@@ -264,4 +272,22 @@ func BuildHandler() (handler *app.Handler, err error) {
 	handler.WasmContentLengthHeader = "Wasm-Content-Length"
 
 	return
+}
+
+var appWorkerJsReplace = map[string]string{
+	"key !== cacheName": `key !== cacheName || key === "DYNAMIC"`,
+	"return response || fetch(event.request);": `if (response) {
+        return response;
+      }
+      if (event.request.url.indexOf("/cover/") === -1) {
+        return fetch(event.request);
+      }
+      return fetch(event.request).then((response) => {
+        return caches.open("DYNAMIC").then((cache) => {
+          cache.put(event.request.url, response.clone()).then(() => {
+          });
+          return response;
+        })
+      })
+`,
 }
