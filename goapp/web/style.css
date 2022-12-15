@@ -221,7 +221,7 @@ body {
 
 .queue-table {
     width: 60vw;
-    border-spacing: 2px;
+    border-spacing: 0;
 }
 
 .queue-playing {
