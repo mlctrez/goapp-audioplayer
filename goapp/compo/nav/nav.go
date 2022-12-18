@@ -5,6 +5,7 @@ import (
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
 	"github.com/mlctrez/goapp-audioplayer/goapp"
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/actions"
+	"github.com/mlctrez/goapp-audioplayer/goapp/compo/search"
 	"github.com/mlctrez/goapp-audioplayer/internal/icon"
 	"github.com/mlctrez/goapp-audioplayer/model"
 	"github.com/mlctrez/goapp-natsws"
@@ -35,7 +36,8 @@ func (n *Navigation) Render() app.UI {
 			app.Div().Body(app.Text("Randomize")).OnClick(n.requestAlbums),
 			&Icon{StateName: "navigation.next", SvgFunc: icon.NavigateNext48},
 		).Style("cursor", "pointer"),
-		n.version(),
+		&search.Widget{},
+		//n.version(),
 	)
 }
 

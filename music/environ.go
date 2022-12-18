@@ -46,6 +46,6 @@ func NatsWebsocketURL() string {
 	// so this error here can be ignored
 	host, port, _ := NatsAddress()
 
-	return fmt.Sprintf("ws://%s:%d", host, port+NatsWebsocketPortOffset)
+	return fmt.Sprintf("http://%s:%d", host, port+NatsWebsocketPortOffset)
 
 }

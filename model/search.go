@@ -29,7 +29,7 @@ func (m *SearchRequest) WebSocketMessageName() string {
 }
 
 type SearchResponse struct {
-	Groups []*ReleaseGroup `json:"release_groups,omitempty"`
+	Results []*Metadata `json:"results,omitempty"`
 }
 
 var _ WebSocketMessage = (*SearchResponse)(nil)

@@ -16,17 +16,25 @@ func (a Api) Ping(request *model.PingRequest) (response *model.PingResponse) {
 	return &model.PingResponse{Query: request.Query}
 }
 
-func (a Api) Search(_ *model.SearchRequest) (response *model.SearchResponse) {
-	return &model.SearchResponse{}
+func (a Api) Search(sr *model.SearchRequest) (response *model.SearchResponse) {
+	var err error
+
+	response, err = a.Catalog.Search("", sr)
+	if err != nil {
+		log.Println("error searching", err)
+		response = &model.SearchResponse{}
+	}
+
+	return
 }
 
 func (a Api) Albums(request *model.AlbumsRequest) (response *model.AlbumsResponse) {
-	response = &model.AlbumsResponse{}
-
 	var err error
+
 	response, err = a.Catalog.Albums("", request)
 	if err != nil {
 		log.Println("error getting catalog albums", err)
+		response = &model.AlbumsResponse{}
 	}
 
 	return

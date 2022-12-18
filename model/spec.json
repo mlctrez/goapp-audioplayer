@@ -272,9 +272,9 @@
       "name": "SearchResponse",
       "fields": [
         {
-          "name": "Groups",
-          "type": "[]*ReleaseGroup",
-          "json": "release_groups"
+          "name": "Results",
+          "type": "[]*Metadata",
+          "json": "results"
         }
       ]
     },

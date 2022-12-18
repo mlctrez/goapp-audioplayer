@@ -8,6 +8,7 @@ import (
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/nav"
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/player"
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/queue"
+	"github.com/mlctrez/goapp-audioplayer/goapp/compo/search"
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/updater"
 	"github.com/mlctrez/goapp-natsws"
 )
@@ -28,6 +29,7 @@ func (r *Root) Render() app.UI {
 		&audio.Audio{},
 
 		&nav.Navigation{},
+		&search.Search{},
 		&queue.Display{},
 		&album.List{},
 		&album.Album{},

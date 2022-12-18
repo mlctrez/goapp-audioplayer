@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/blevesearch/bleve/v2"
 	"github.com/disintegration/imaging"
 	"github.com/google/uuid"
 	caa "github.com/mineo/gocaa"
@@ -17,7 +18,6 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 	"time"
 )
@@ -27,8 +27,13 @@ const UserAgent = "goapp-audioplayer (" + Repo + ")"
 const tWidth = 400
 
 type Catalog struct {
-	db  *bolt.Bolt
-	caa *caa.CAAClient
+	db    *bolt.Bolt
+	caa   *caa.CAAClient
+	index bleve.Index
+}
+
+func (c *Catalog) DB() *bolt.Bolt {
+	return c.db
 }
 
 // ReleaseDiscTrack bucket stores model.Metadata keyed by releaseGroupId,
@@ -58,56 +63,51 @@ func OpenCatalog(path string, readonly ...bool) (c *Catalog, err error) {
 		return
 	}
 
+	c.index, err = bleve.Open("bleve_index")
+	if err != nil {
+		c.CloseCatalog()
+		return
+	}
 	return
 }
 
 func (c *Catalog) CloseCatalog() {
-	err := c.db.Close()
-	if err != nil {
-		log.Println(err)
+	if c.db != nil {
+		err := c.db.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+	if c.index != nil {
+		err := c.index.Close()
+		if err != nil {
+			log.Println(err)
+		}
 	}
 }
 
 var _ model.Api = (*Catalog)(nil)
 
-func (c *Catalog) Search(clientId string, request *model.SearchRequest) (response *model.SearchResponse, err error) {
-	_ = clientId
+func (c *Catalog) Search(_ string, request *model.SearchRequest) (response *model.SearchResponse, err error) {
 	response = &model.SearchResponse{}
 
-	matchedGroups := make(map[string]string)
+	search := bleve.NewSearchRequest(bleve.NewQueryStringQuery(request.Search))
+	search.Size = 50
+	searchResult, _ := c.index.Search(search)
 
-	// search for matching albums by name and artist
-	err = c.db.View(func(tx *bbolt.Tx) error {
-		cursor := tx.Bucket(ReleaseDiscTrack.B()).Cursor()
+	err = c.DB().View(func(tx *bbolt.Tx) error {
 
-		for k, v := cursor.First(); k != nil; k, v = cursor.Next() {
-			if matchedGroups[strings.Split(string(k), "_")[0]] != "" {
-				continue
-			}
-
+		for _, hit := range searchResult.Hits {
 			md := &model.Metadata{}
-			if jsonErr := json.Unmarshal(v, md); err != nil {
-				return jsonErr
+			result := tx.Bucket(ReleaseDiscTrack.B()).Get([]byte(hit.ID))
+			if err = json.Unmarshal(result, md); err != nil {
+				return err
 			}
-			if strings.Contains(strings.ToLower(md.Artist), request.Search) {
-				matchedGroups[md.MusicbrainzReleaseGroupId] = md.Artist + "/" + md.Album
-			}
+			response.Results = append(response.Results, md)
 		}
+
 		return nil
-	})
-
-	for groupId, searchKey := range matchedGroups {
-		response.Groups = append(response.Groups,
-			&model.ReleaseGroup{
-				ID:       groupId,
-				CoverArt: model.CoverArtUrl(groupId, 0),
-				SortKey:  searchKey,
-			},
-		)
-	}
-
-	sort.SliceStable(response.Groups, func(i, j int) bool {
-		return response.Groups[i].SortKey < response.Groups[j].SortKey
 	})
 
 	return

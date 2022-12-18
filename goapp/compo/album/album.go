@@ -6,7 +6,6 @@ import (
 	"github.com/mlctrez/goapp-audioplayer/goapp/compo/nodisplay"
 	"github.com/mlctrez/goapp-audioplayer/internal/icon"
 	"github.com/mlctrez/goapp-audioplayer/model"
-	"github.com/mlctrez/goapp-natsws"
 	"strings"
 	"time"
 )
@@ -15,7 +14,6 @@ type Album struct {
 	app.Compo
 	album       *model.AlbumResponse
 	displayMode string
-	natswsConn  *natsws.Connection
 }
 
 func (t *Album) OnMount(ctx app.Context) {

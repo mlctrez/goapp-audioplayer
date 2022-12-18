@@ -71,6 +71,26 @@ body {
     cursor: not-allowed;
 }
 
+.navigation-search {
+    display: flex;
+    flex-direction: row;
+    padding-right: 20px;
+}
+
+.navigation-search input {
+    margin-top: 10px;
+    height: 30px;
+    color: cadetblue;
+    border: 0;
+    background-color: #111;
+    outline: none;
+}
+
+.navigation-search svg {
+    fill: cadetblue;
+    transform: scale(0.7);
+    cursor: pointer;
+}
 
 .navigation-center div {
     padding-left: 20px;
@@ -327,6 +347,14 @@ body {
     border: 0;
     cursor: pointer;
     background: cadetblue;
+}
+
+.search-table {
+    width: 80vw;
+}
+
+.search-row-tr {
+    cursor: pointer;
 }
 
 @media (max-width: 800px) {
