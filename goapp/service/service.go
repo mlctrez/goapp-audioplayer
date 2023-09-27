@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	brotli "github.com/anargu/gin-brotli"
 	"github.com/gin-gonic/gin"
 	"github.com/kardianos/service"
 	"github.com/maxence-charriere/go-app/v9/pkg/app"
@@ -82,7 +81,7 @@ func (s *Service) Start(_ service.Service) (err error) {
 			engine.Use(gin.Logger(), gin.Recovery())
 		}
 	} else {
-		engine.Use(gin.Recovery(), brotli.Brotli(brotli.DefaultCompression))
+		engine.Use(gin.Recovery())
 	}
 
 	if err = setupGinStaticHandlers(engine); err != nil {
