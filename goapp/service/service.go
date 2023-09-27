@@ -77,9 +77,9 @@ func (s *Service) Start(_ service.Service) (err error) {
 	if dev {
 		if reduceNoise {
 			logConfig := gin.LoggerConfig{SkipPaths: []string{"/app-worker.js", "/web"}}
-			engine.Use(gin.LoggerWithConfig(logConfig), gin.Recovery(), brotli.Brotli(brotli.DefaultCompression))
+			engine.Use(gin.LoggerWithConfig(logConfig), gin.Recovery())
 		} else {
-			engine.Use(gin.Logger(), gin.Recovery(), brotli.Brotli(brotli.DefaultCompression))
+			engine.Use(gin.Logger(), gin.Recovery())
 		}
 	} else {
 		engine.Use(gin.Recovery(), brotli.Brotli(brotli.DefaultCompression))
