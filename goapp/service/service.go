@@ -100,7 +100,12 @@ func (s *Service) Start(_ service.Service) (err error) {
 	if handler, err = BuildHandler(); err != nil {
 		return
 	}
-	engine.NoRoute(gin.WrapH(handler))
+
+	h := gin.WrapH(handler)
+	engine.NoRoute(func(c *gin.Context) {
+		c.Writer.WriteHeader(200)
+		h(c)
+	})
 
 	server := &http.Server{Handler: engine}
 	s.serverShutdown = server.Shutdown
