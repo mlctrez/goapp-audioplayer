@@ -2,9 +2,10 @@
   "Name": "mlctrez Music",
   "ShortName": "music",
   "Icon": {
-    "Default": "/web/logo-192.png",
-    "Large": "/web/logo-512.png",
-    "AppleTouch": "/web/logo-192.png"
+    "Default": "https://raw.githubusercontent.com/mlctrez/goapp-audioplayer/master/goapp/web/logo-192.png",
+    "Large": "https://raw.githubusercontent.com/mlctrez/goapp-audioplayer/master/goapp/web/logo-512.png",
+    "AppleTouch": "https://raw.githubusercontent.com/mlctrez/goapp-audioplayer/master/goapp/web/logo-192.png",
+    "SVG": "https://raw.githubusercontent.com/mlctrez/goapp-audioplayer/master/goapp/web/logo.svg"
   },
   "BackgroundColor": "#222",
   "ThemeColor": "#000",
@@ -20,7 +21,11 @@
     "/web/style.css"
   ],
   "Scripts": [],
-  "CacheableResources": [],
+  "CacheableResources": [
+    "https://raw.githubusercontent.com/mlctrez/goapp-audioplayer/master/goapp/web/logo-192.png",
+    "https://raw.githubusercontent.com/mlctrez/goapp-audioplayer/master/goapp/web/logo-512.png",
+    "https://raw.githubusercontent.com/mlctrez/goapp-audioplayer/master/goapp/web/logo.svg"
+  ],
   "RawHeaders": [],
   "AutoUpdateInterval": 0,
   "Env": {
